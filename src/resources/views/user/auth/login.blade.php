@@ -6,11 +6,11 @@
 
 @section('content')
 @if(session('message'))
-<div class="login-alert">{{ session('message') }}</div>
+<div class="alert">{{ session('message') }}</div>
 @endif
 <div class="content">
-    <h1 class="login-form__heading">ログイン</h1>
-    <form class="login-form" action="" class="login-form" novalidate>
+    <h1 class="form__heading">ログイン</h1>
+    <form class="form" action="" novalidate>
         @csrf
         <div class="form__group">
             <label class="form__label" for="email">メールアドレス</label>
