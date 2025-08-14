@@ -10,7 +10,7 @@
     <form class="form" action="" novalidate>
         @csrf
         <div class="form__group">
-            <label for="" class="form__label" for="name">名前</label>
+            <label for="name" class="form__label" for="name">名前</label>
             <div class="form__group-content">
                 <div class="form__input-text">
                     <input type="text" name="name" id="name" value="{{ old('name') }}">
@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="form__group">
-            <label for="" class="form__label" for="email">メールアドレス</label>
+            <label for="email" class="form__label" for="email">メールアドレス</label>
             <div class="form__group-content">
                 <div class="form__input-text">
                     <input type="email" name="email" id="email" value="{{ old('email') }}">
@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="form__group">
-            <label for="" class="form__label" for="password">パスワード</label>
+            <label for="password" class="form__label" for="password">パスワード</label>
             <div class="form__group-content">
                 <div class="form__input-text">
                     <input type="password" name="password" id="password">
@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="form__group">
-            <label for="" class="form__label" for="password_confirmation">パスワード確認</label>
+            <label for="password_confirmation" class="form__label" for="password_confirmation">パスワード確認</label>
             <div class="form__group-content">
                 <div class="form__input-text">
                     <input type="password" name="password_confirmation" id="password_confirmation">
