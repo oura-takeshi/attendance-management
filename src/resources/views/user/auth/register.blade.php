@@ -7,7 +7,7 @@
 @section('content')
 <div class="content">
     <h1 class="form__heading">会員登録</h1>
-    <form class="form" action="" novalidate>
+    <form class="form" action="/register" method="post" novalidate>
         @csrf
         <div class="form__group">
             <label for="name" class="form__label" for="name">名前</label>

@@ -2,12 +2,12 @@
     display: none;
 }
 
-.login-alert {
-    padding: 10px 2vw;
+.alert {
+    padding: 10px 30px;
     border: solid 1px #f5c2c7;
     background-color: #f8d7da;
     color: #842029;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 400;
 }
 
@@ -60,7 +60,7 @@
 }
 
 .form__error {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 400;
     color: #ff0000;
 }
