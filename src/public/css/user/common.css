@@ -1,0 +1,36 @@
+.header {
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #000000;
+}
+
+.header__img-logo {
+    margin-left: 25px;
+    width: 370px;
+    height: auto;
+}
+
+.nav {
+    margin-right: 46px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 41px;
+}
+
+.nav__link {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.nav__logout-button {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    font-weight: 700;
+}
