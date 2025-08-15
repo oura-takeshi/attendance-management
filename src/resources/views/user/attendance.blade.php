@@ -8,7 +8,11 @@
 <div class="content">
     @switch($user->status)
     @case(1)
+    @if($exist_work_time == null)
     <p class="status">勤務外</p>
+    @else
+    <p class="status">退勤済</p>
+    @endif
     @break
     @case(2)
     <p class="status">出勤中</p>
@@ -20,6 +24,7 @@
     <p class="time">{{ $now->format('H:i') }}</p>
     @switch($user->status)
     @case(1)
+    @if($exist_work_time == null)
     <div class="form__outer">
         <form class="form" action="/attendance/work" method="post">
             @csrf
@@ -27,6 +32,9 @@
             <button class="form__button-submit" type="submit">出勤</button>
         </form>
     </div>
+    @else
+    <p class="comment">お疲れ様でした。</p>
+    @endif
     @break
     @case(2)
     <div class="form__outer flex">
