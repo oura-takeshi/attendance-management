@@ -20,44 +20,40 @@
     @default
     <p class="status">休憩中</p>
     @endswitch
-    <p class="date">{{ $now->format('Y年m月d日') }}({{ $day_of_week }})</p>
+    <p class="date">{{ $now->format('Y年n月j日') }}({{ $day_of_week }})</p>
     <p class="time">{{ $now->format('H:i') }}</p>
     @switch($user->status)
     @case(1)
     @if($exist_work_time == null)
-    <div class="form__outer">
-        <form class="form" action="/attendance/work" method="post">
-            @csrf
-            <input type="text" name="user_id" value="{{ $user->id }}">
-            <button class="form__button-submit" type="submit">出勤</button>
-        </form>
-    </div>
+    <form action="/attendance/work" method="post">
+        @csrf
+        <input type="hidden" name="user_id" value="{{ $user->id }}">
+        <button class="form__button-submit" type="submit">出勤</button>
+    </form>
     @else
     <p class="comment">お疲れ様でした。</p>
     @endif
     @break
     @case(2)
-    <div class="form__outer flex">
-        <form class="form" action="/attendance/work" method="post">
+    <div class="form__outer">
+        <form action="/attendance/work" method="post">
             @csrf
-            <input type="text" name="user_id" value="{{ $user->id }}">
+            <input type="hidden" name="user_id" value="{{ $user->id }}">
             <button class="form__button-submit" type="submit">退勤</button>
         </form>
-        <form class="form" action="/attendance/break" method="post">
+        <form action="/attendance/break" method="post">
             @csrf
-            <input type="text" name="user_id" value="{{ $user->id }}">
+            <input type="hidden" name="user_id" value="{{ $user->id }}">
             <button class="form__button-submit--break" type="submit">休憩入</button>
         </form>
     </div>
     @break
     @default
-    <div class="form__outer">
-        <form class="form" action="/attendance/break" method="post">
-            @csrf
-            <input type="text" name="user_id" value="{{ $user->id }}">
-            <button class="form__button-submit--break" type="submit">休憩戻</button>
-        </form>
-    </div>
+    <form action="/attendance/break" method="post">
+        @csrf
+        <input type="hidden" name="user_id" value="{{ $user->id }}">
+        <button class="form__button-submit--break" type="submit">休憩戻</button>
+    </form>
     @endswitch
 </div>
 @endsection
