@@ -20,7 +20,6 @@ class MultiAuthTableSeeder extends Seeder
                 'name' => 'hoge',
                 'email' => 'hoge@example.com',
                 'password' => Hash::make('hoge1234'),
-                'status' => '1',
             ],
         ]);
         DB::table('admins')->insert([

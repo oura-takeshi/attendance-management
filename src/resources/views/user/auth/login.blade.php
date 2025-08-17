@@ -9,7 +9,7 @@
 <div class="alert">{{ session('message') }}</div>
 @endif
 <div class="content">
-    <h1 class="form__heading">ログイン</h1>
+    <h1 class="heading">ログイン</h1>
     <form class="form" action="/login" method="post" novalidate>
         @csrf
         <div class="form__group">

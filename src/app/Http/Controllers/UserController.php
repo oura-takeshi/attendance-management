@@ -71,5 +71,37 @@ class UserController extends Controller
         }
         return redirect('/attendance');
     }
+
+    public function list(Request $request, $year = null, $month = null){
+        if ($year && $month) {
+            $current_year = $year;
+            $current_month = $month;
+        } elseif ($year) {
+            $current_year = $year;
+            $current_month = '1';
+        } else {
+            $now = Carbon::now();
+            $current_year = $now->year;
+            $current_month = $now->month;
+        }
+
+        $date = Carbon::create($current_year, $current_month, 1);
+        $prev_year = $date->copy()->subMonth()->year;
+        $prev_month = $date->copy()->subMonth()->month;
+        $next_year = $date->copy()->addMonth()->year;
+        $next_month = $date->copy()->addMonth()->month;
+
+        $days_in_month = $date->daysInMonth;
+        $dates = [];
+        for ($day = 1; $day <= $days_in_month; $day++) {
+            $date = Carbon::create($current_year, $current_month, $day);
+
+            $week = ['日', '月', '火', '水', '木', '金', '土'];
+            $day_of_week = $week[$date->format('w')];
+
+            $dates[] = ['date' => $date, 'day_of_week' => $day_of_week];
+        }
+        return view('user.list', compact('current_year', 'current_month', 'prev_year', 'prev_month', 'next_year', 'next_month', 'dates'));
+    }
 }
 

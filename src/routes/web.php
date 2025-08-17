@@ -24,7 +24,7 @@ Route::group(['middleware' => 'auth:web'], function () {
     Route::get('/attendance', [UserController::class, 'attendance']);
     Route::post('/attendance/work', [UserController::class, 'workCreate']);
     Route::post('/attendance/break', [UserController::class, 'breakCreate']);
-    Route::get('/attendance/list', [UserController::class, 'list']);
+    Route::get('/attendance/list/{year?}/{month?}', [UserController::class, 'list']);
     Route::get('/attendance/detail/{id}}', [UserController::class, 'detail']);
     Route::get('/stamp_correction_request/list', [UserController::class, 'request']);
 });
