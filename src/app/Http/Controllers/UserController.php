@@ -49,8 +49,17 @@ class UserController extends Controller
             $exist_work_end_time = $exist_work_time->end_time;
 
             if ($exist_work_end_time) {
-                return back();
+                return redirect('/attendance');
             } else {
+                $exist_break_time = BreakTime::where('work_time_id', $exist_work_time->id)->whereDate('start_time', $today)->latest()->first();
+
+                if ($exist_break_time) {
+                    $exist_break_end_time = $exist_break_time->end_time;
+
+                    if (!$exist_break_end_time) {
+                        return redirect('/attendance');
+                    }
+                }
                 $exist_work_time->update(['end_time' => Carbon::now()]);
             }
         } else {
@@ -60,7 +69,7 @@ class UserController extends Controller
             ]);
         }
 
-        return back();
+        return redirect('/attendance');
     }
 
     public function breakCreate()
@@ -69,12 +78,12 @@ class UserController extends Controller
         $exist_work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
 
         if (!$exist_work_time) {
-            return back();
+            return redirect('/attendance');
         } else {
             $exist_work_end_time = $exist_work_time->end_time;
 
             if ($exist_work_end_time) {
-                return back();
+                return redirect('/attendance');
             }
         }
 
@@ -98,7 +107,7 @@ class UserController extends Controller
             }
         }
 
-        return back();
+        return redirect('/attendance');
     }
 
     public function list(Request $request, $year = null, $month = null)
