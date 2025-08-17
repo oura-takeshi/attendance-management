@@ -6,54 +6,28 @@
 
 @section('content')
 <div class="content">
-    @switch($user->status)
-    @case(1)
-    @if($exist_work_time == null)
+    @if(!$exist_work_time)
     <p class="status">勤務外</p>
+    @elseif(!$exist_work_end_time && (!$exist_break_time || $exist_break_end_time))
+    <p class="status">出勤中</p>
+    @elseif(!$exist_work_end_time && !$exist_break_end_time)
+    <p class="status">休憩中</p>
     @else
     <p class="status">退勤済</p>
     @endif
-    @break
-    @case(2)
-    <p class="status">出勤中</p>
-    @break
-    @default
-    <p class="status">休憩中</p>
-    @endswitch
     <p class="date">{{ $now->format('Y年n月j日') }}({{ $day_of_week }})</p>
     <p class="time">{{ $now->format('H:i') }}</p>
-    @switch($user->status)
-    @case(1)
-    @if($exist_work_time == null)
-    <form action="/attendance/work" method="post">
-        @csrf
-        <input type="hidden" name="user_id" value="{{ $user->id }}">
-        <button class="form__button-submit" type="submit">出勤</button>
-    </form>
+    @if(!$exist_work_time)
+    <a class="work-link" href="/attendance/work">出勤</a>
+    @elseif(!$exist_work_end_time && (!$exist_break_time || $exist_break_end_time))
+    <div class="links__outer">
+        <a class="work-link" href="/attendance/work">退勤</a>
+        <a class="break-link" href="/attendance/break">休憩入</a>
+    </div>
+    @elseif(!$exist_work_end_time && (!$exist_break_time || !$exist_break_end_time))
+    <a class="break-link" href="/attendance/break">休憩戻</a>
     @else
     <p class="comment">お疲れ様でした。</p>
     @endif
-    @break
-    @case(2)
-    <div class="form__outer">
-        <form action="/attendance/work" method="post">
-            @csrf
-            <input type="hidden" name="user_id" value="{{ $user->id }}">
-            <button class="form__button-submit" type="submit">退勤</button>
-        </form>
-        <form action="/attendance/break" method="post">
-            @csrf
-            <input type="hidden" name="user_id" value="{{ $user->id }}">
-            <button class="form__button-submit--break" type="submit">休憩入</button>
-        </form>
-    </div>
-    @break
-    @default
-    <form action="/attendance/break" method="post">
-        @csrf
-        <input type="hidden" name="user_id" value="{{ $user->id }}">
-        <button class="form__button-submit--break" type="submit">休憩戻</button>
-    </form>
-    @endswitch
 </div>
 @endsection

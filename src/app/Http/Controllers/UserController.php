@@ -11,68 +11,98 @@ use Carbon\Carbon;
 
 class UserController extends Controller
 {
-    public function attendance(){
-        $user = Auth::user();
-
+    public function attendance()
+    {
         $now = Carbon::now();
-
-        $week = ['日', '月', '火', '水', '木', '金', '土'];
         $date = $now->format('w');
+        $week = ['日', '月', '火', '水', '木', '金', '土'];
         $day_of_week = $week[$date];
 
         $today = Carbon::today();
         $exist_work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
 
-        return view('user.attendance', compact('user', 'now', 'day_of_week', 'exist_work_time'));
-    }
+        if (!$exist_work_time) {
+            $exist_work_end_time = null;
+            $exist_break_time = null;
+            $exist_break_end_time = null;
+        } else {
+            $exist_work_end_time = $exist_work_time->end_time;
 
-    public function workCreate(Request $request){
-        switch (Auth::user()->status){
-            case '1':
-                User::find($request->user_id)->update(['status' => '2']);
+            $exist_break_time = BreakTime::where('work_time_id', $exist_work_time->id)->whereDate('start_time', $today)->latest()->first();
 
-                WorkTime::create([
-                    'user_id' => Auth::id(),
-                    'start_time' => Carbon::now(),
-                ]);
-            break;
-            case '2':
-                User::find($request->user_id)->update(['status' => '1']);
-
-                $today = Carbon::today();
-                $work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
-                $work_time->update(['end_time' => Carbon::now()]);
-            break;
+            if (!$exist_break_time) {
+                $exist_break_end_time = null;
+            } else {
+                $exist_break_end_time = $exist_break_time->end_time;
+            }
         }
-        return redirect('/attendance');
+
+        return view('user.attendance', compact('now', 'day_of_week', 'exist_work_time', 'exist_work_end_time', 'exist_break_time', 'exist_break_end_time'));
     }
 
-    public function breakCreate(Request $request)
+    public function workCreate()
     {
         $today = Carbon::today();
-        $work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
+        $exist_work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
 
-        switch (Auth::user()->status) {
-            case '2':
-                User::find($request->user_id)->update(['status' => '3']);
+        if ($exist_work_time) {
+            $exist_work_end_time = $exist_work_time->end_time;
 
-                BreakTime::create([
-                    'work_time_id' => $work_time->id,
-                    'start_time' => Carbon::now(),
-                ]);
-                break;
-            case '3':
-                User::find($request->user_id)->update(['status' => '2']);
-
-                $today = Carbon::today();
-                $latest_break_time = BreakTime::where('work_time_id', $work_time->id)->whereDate('start_time', $today)->latest()->first();
-                $latest_break_time->update(['end_time' => Carbon::now()]);
-                break;
+            if ($exist_work_end_time) {
+                return back();
+            } else {
+                $exist_work_time->update(['end_time' => Carbon::now()]);
+            }
+        } else {
+            WorkTime::create([
+                'user_id' => Auth::id(),
+                'start_time' => Carbon::now(),
+            ]);
         }
-        return redirect('/attendance');
+
+        return back();
     }
 
-    public function list(Request $request, $year = null, $month = null){
+    public function breakCreate()
+    {
+        $today = Carbon::today();
+        $exist_work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
+
+        if (!$exist_work_time) {
+            return back();
+        } else {
+            $exist_work_end_time = $exist_work_time->end_time;
+
+            if ($exist_work_end_time) {
+                return back();
+            }
+        }
+
+        $exist_break_time = BreakTime::where('work_time_id', $exist_work_time->id)->whereDate('start_time', $today)->latest()->first();
+
+        if (!$exist_break_time) {
+            BreakTime::create([
+                'work_time_id' => $exist_work_time->id,
+                'start_time' => Carbon::now(),
+            ]);
+        } else {
+            $exist_break_end_time = $exist_break_time->end_time;
+
+            if ($exist_break_end_time) {
+                BreakTime::create([
+                    'work_time_id' => $exist_work_time->id,
+                    'start_time' => Carbon::now(),
+                ]);
+            } else {
+                $exist_break_time->update(['end_time' => Carbon::now()]);
+            }
+        }
+
+        return back();
+    }
+
+    public function list(Request $request, $year = null, $month = null)
+    {
         if ($year && $month) {
             $current_year = $year;
             $current_month = $month;
@@ -104,4 +134,3 @@ class UserController extends Controller
         return view('user.list', compact('current_year', 'current_month', 'prev_year', 'prev_month', 'next_year', 'next_month', 'dates'));
     }
 }
-

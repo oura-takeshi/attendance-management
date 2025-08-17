@@ -15,17 +15,17 @@ class MultiAuthTableSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('admins')->insert([
+            [
+                'email' => 'admin@example.com',
+                'password' => Hash::make('admin1234'),
+            ],
+        ]);
         DB::table('users')->insert([
             [
                 'name' => 'hoge',
                 'email' => 'hoge@example.com',
                 'password' => Hash::make('hoge1234'),
-            ],
-        ]);
-        DB::table('admins')->insert([
-            [
-                'email' => 'admin@example.com',
-                'password' => Hash::make('admin1234'),
             ],
         ]);
     }

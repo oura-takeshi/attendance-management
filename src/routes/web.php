@@ -22,8 +22,8 @@ Route::post('/login', [MultiAuthController::class, 'userLogin']);
 Route::group(['middleware' => 'auth:web'], function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'userDestroy']);
     Route::get('/attendance', [UserController::class, 'attendance']);
-    Route::post('/attendance/work', [UserController::class, 'workCreate']);
-    Route::post('/attendance/break', [UserController::class, 'breakCreate']);
+    Route::get('/attendance/work', [UserController::class, 'workCreate']);
+    Route::get('/attendance/break', [UserController::class, 'breakCreate']);
     Route::get('/attendance/list/{year?}/{month?}', [UserController::class, 'list']);
     Route::get('/attendance/detail/{id}}', [UserController::class, 'detail']);
     Route::get('/stamp_correction_request/list', [UserController::class, 'request']);

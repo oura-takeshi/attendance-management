@@ -17,7 +17,6 @@ class MultiAuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'status' => '1'
         ]);
         Auth::login($user);
         return redirect('/attendance');
