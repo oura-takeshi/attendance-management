@@ -6,7 +6,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 209px auto;
+    margin: 209px auto 280px;
 }
 
 .status {
@@ -35,14 +35,6 @@ body {
     font-size: 80px;
     font-weight: 700;
     line-height: 97px;
-}
-
-.comment {
-    margin: 28px 0 0;
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 31px;
-    letter-spacing: 0.15em;
 }
 
 .links__outer {
@@ -76,5 +68,13 @@ body {
     font-size: 32px;
     font-weight: 700;
     color: #000000;
+    letter-spacing: 0.15em;
+}
+
+.comment {
+    margin: 28px 0 31px;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 31px;
     letter-spacing: 0.15em;
 }

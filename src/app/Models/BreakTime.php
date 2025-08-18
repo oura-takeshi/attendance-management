@@ -15,6 +15,11 @@ class BreakTime extends Model
         'end_time'
     ];
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
+
     public function workTime()
     {
         return $this->belongsTo(WorkTime::class);
