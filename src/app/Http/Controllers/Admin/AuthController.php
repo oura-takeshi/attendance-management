@@ -22,9 +22,4 @@ class AuthController extends Controller
             return redirect('/admin/login')->with('message', 'ログイン情報が登録されていません');
         }
     }
-
-    public function adminRedirectHome()
-    {
-        return redirect('/admin/attendance/list');
-    }
 }

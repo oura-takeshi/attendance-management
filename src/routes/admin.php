@@ -20,7 +20,6 @@ Route::get('/admin/login', [AuthController::class, 'adminShowLogin']);
 Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 Route::middleware('auth:admin')->group(function () {
     Route::post('/admin/logout', [AuthenticatedSessionController::class, 'adminDestroy']);
-    Route::get('/admin/logout', [AuthController::class, 'adminRedirectHome']);
     Route::get('/admin/attendance/list', [AttendanceController::class, 'attendance']);
     Route::get('/admin/staff/list', [AttendanceController::class, 'staff']);
     Route::get('/admin/attendance/satff/{id}', [AttendanceController::class, 'list']);
