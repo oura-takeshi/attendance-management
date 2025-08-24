@@ -45,9 +45,13 @@
                 @else
                 <td class="table__desc"></td>
                 @endif
+                @if($date['work_time_id'])
                 <td class="table__desc">
-                    <a class="table__detail-link" href="/attendance/{{ $date['date']->format('Y/m/d') }}">詳細</a>
+                    <a class="table__detail-link" href="/attendance/{{ $date['work_time_id'] }}">詳細</a>
                 </td>
+                @else
+                <td class="table__desc">詳細</td>
+                @endif
             </tr>
             @endforeach
         </table>

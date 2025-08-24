@@ -2,6 +2,10 @@ body {
     background-color: #F0EFF2;
 }
 
+.clock-out {
+    font-weight: 400;
+}
+
 .content {
     display: flex;
     flex-direction: column;

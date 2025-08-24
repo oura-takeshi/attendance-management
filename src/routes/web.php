@@ -19,13 +19,13 @@ use App\Http\Controllers\User\AttendanceController;
 Route::post('/register', [AuthController::class, 'userStore']);
 Route::post('/login', [AuthController::class, 'userLogin']);
 Route::middleware('auth:web')->group(function () {
+    Route::post('/logout', [AuthenticatedSessionController::class, 'userDestroy']);
     Route::get('/attendance', [AttendanceController::class, 'attendance']);
     Route::get('/attendance/work', [AttendanceController::class, 'workCreate']);
     Route::get('/attendance/break', [AttendanceController::class, 'breakCreate']);
     Route::get('/attendance/list/{year?}/{month?}', [AttendanceController::class, 'list']);
 });
 Route::middleware(['auth:web', 'guard.redirect'])->group(function () {
-    Route::post('/logout', fn() => null);
     Route::get('/attendance/{work_time_id}', fn() => null);
     Route::get('/stamp_correction_request/list', fn() => null);
 });

@@ -144,12 +144,10 @@ body {
 
 .table__desc:last-of-type {
     padding-right: 38px;
+    color: #000000;
 }
 
 .table__detail-link {
-    font-size: 16px;
-    font-weight: 700;
     color: #000000;
-    letter-spacing: 0.15em;
     text-decoration: none;
 }

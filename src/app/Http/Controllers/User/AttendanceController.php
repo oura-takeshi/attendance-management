@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\WorkTime;
 use App\Models\BreakTime;
 use Carbon\Carbon;
 
-class UserController extends Controller
+class AttendanceController extends Controller
 {
     public function attendance()
     {
@@ -109,7 +110,7 @@ class UserController extends Controller
         return redirect('/attendance');
     }
 
-    public function list(Request $request, $year = null, $month = null)
+    public function list($year = null, $month = null)
     {
         if ($year && $month) {
             $input_date = Carbon::create($year, $month);
@@ -143,14 +144,14 @@ class UserController extends Controller
             if ($exist_work_time) {
                 $work_start_time = $exist_work_time->start_time;
                 $work_end_time = $exist_work_time->end_time;
-
                 $exist_break_times = $exist_work_time->breakTimes;
+
                 if ($exist_break_times) {
                     $total_break_time_minutes = 0;
                     foreach ($exist_break_times as $break_time) {
                         $break_start_time = $break_time->start_time;
-
                         $break_end_time = $break_time->end_time;
+
                         if ($break_end_time) {
                             $total_break_time_minutes += $break_end_time->diffInMinutes($break_start_time);
                         } else {
@@ -164,9 +165,12 @@ class UserController extends Controller
 
                 if ($work_end_time) {
                     $total_work_time_minutes = $work_end_time->diffInMinutes($work_start_time);
+                    $work_time_id = $exist_work_time->id;
                 } else {
                     $total_work_time_minutes = Carbon::now()->diffInMinutes($work_start_time);
+                    $work_time_id = null;
                 }
+
                 $actual_work_time_minutes = $total_work_time_minutes - $total_break_time_minutes;
                 $actual_work_time = Carbon::now()->setTime(0, 0)->addMinutes($actual_work_time_minutes);
 
@@ -175,6 +179,7 @@ class UserController extends Controller
                 $work_end_time = null;
                 $total_break_time = null;
                 $actual_work_time = null;
+                $work_time_id = null;
             }
 
             $dates[] = [
@@ -184,8 +189,14 @@ class UserController extends Controller
                 'work_end_time' => $work_end_time,
                 'total_break_time' => $total_break_time,
                 'actual_work_time' => $actual_work_time,
+                'work_time_id' => $work_time_id
             ];
         }
         return view('user.list', compact('current_year', 'current_month', 'prev_year', 'prev_month', 'next_year', 'next_month', 'dates'));
+    }
+
+    public function detail($work_time_id)
+    {
+        return view('user.detail');
     }
 }

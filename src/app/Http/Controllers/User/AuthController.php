@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\LoginRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-class MultiAuthController extends Controller
+class AuthController extends Controller
 {
     public function userStore(RegisterRequest $request)
     {
