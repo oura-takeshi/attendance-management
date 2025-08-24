@@ -2,9 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\MultiAuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\User\AuthController;
+use App\Http\Controllers\User\AttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,26 +16,16 @@ use App\Http\Controllers\AdminController;
 |
 */
 
-Route::post('/register', [MultiAuthController::class, 'userStore']);
-Route::post('/login', [MultiAuthController::class, 'userLogin']);
-Route::group(['middleware' => 'auth:web'], function () {
-    Route::post('/logout', [AuthenticatedSessionController::class, 'userDestroy']);
-    Route::get('/attendance', [UserController::class, 'attendance']);
-    Route::get('/attendance/work', [UserController::class, 'workCreate']);
-    Route::get('/attendance/break', [UserController::class, 'breakCreate']);
-    Route::get('/attendance/list/{year?}/{month?}', [UserController::class, 'list']);
-    Route::get('/attendance/detail/{id}}', [UserController::class, 'detail']);
-    Route::get('/stamp_correction_request/list', [UserController::class, 'request']);
+Route::post('/register', [AuthController::class, 'userStore']);
+Route::post('/login', [AuthController::class, 'userLogin']);
+Route::middleware('auth:web')->group(function () {
+    Route::get('/attendance', [AttendanceController::class, 'attendance']);
+    Route::get('/attendance/work', [AttendanceController::class, 'workCreate']);
+    Route::get('/attendance/break', [AttendanceController::class, 'breakCreate']);
+    Route::get('/attendance/list/{year?}/{month?}', [AttendanceController::class, 'list']);
 });
-
-Route::group(['prefix' => 'admin'], function () {
-    Route::group(['middleware' => 'auth:admin'], function () {
-        Route::post('logout', [AuthenticatedSessionController::class, 'adminDestroy']);
-        Route::get('attendances', [AdminController::class, 'index']);
-        Route::get('attendances/{id}', [AdminController::class, 'detail']);
-        Route::get('users', [AdminController::class, 'usersList']);
-        Route::get('users/{user}/attendances', [AdminController::class, 'list']);
-        Route::get('requests', [AdminController::class, 'request']);
-        Route::get('requests/{id}', [AdminController::class, 'approval']);
-    });
+Route::middleware(['auth:web', 'guard.redirect'])->group(function () {
+    Route::post('/logout', fn() => null);
+    Route::get('/attendance/{work_time_id}', fn() => null);
+    Route::get('/stamp_correction_request/list', fn() => null);
 });
