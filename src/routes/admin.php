@@ -26,6 +26,7 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/stamp_correction_request/approval/{attendance_correct_request}', [AttendanceController::class, 'approval']);
 });
 Route::middleware(['auth:admin', 'guard.redirect'])->group(function () {
-    Route::get('/attendance/{work_time_id}', fn() => null);
-    Route::get('/stamp_correction_request/list', fn() => null);
+    Route::get('/attendance/{work_time_id}', fn() => null)->name('admin.detail');
+    Route::get('/stamp_correction_request/list', fn() => null)
+        ->name('admin.list');
 });

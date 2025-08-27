@@ -27,6 +27,11 @@ class MultiAuthTableSeeder extends Seeder
                 'email' => 'hoge@example.com',
                 'password' => Hash::make('hoge1234'),
             ],
+            [
+                'name' => 'fuga',
+                'email' => 'fuga@example.com',
+                'password' => Hash::make('fuga1234'),
+            ],
         ]);
     }
 }

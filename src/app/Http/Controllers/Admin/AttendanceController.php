@@ -11,4 +11,9 @@ class AttendanceController extends Controller
     {
         return view('admin.attendance');
     }
+
+    public function detail()
+    {
+        return view('admin.detail');
+    }
 }

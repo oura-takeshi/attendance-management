@@ -17,11 +17,19 @@ class GuardControllerRedirect
      */
 
     protected $mapping = [
-        '/attendance/{work_time_id}' => [
+        'user.detail' => [
             'web'   => [\App\Http\Controllers\User\AttendanceController::class, 'detail'],
             'admin' => [\App\Http\Controllers\Admin\AttendanceController::class, 'detail'],
         ],
-        '/stamp_correction_request/list' => [
+        'user.list' => [
+            'web'   => [\App\Http\Controllers\User\AttendanceController::class, 'request'],
+            'admin' => [\App\Http\Controllers\Admin\AttendanceController::class, 'request'],
+        ],
+        'admin.detail' => [
+            'web'   => [\App\Http\Controllers\User\AttendanceController::class, 'detail'],
+            'admin' => [\App\Http\Controllers\Admin\AttendanceController::class, 'detail'],
+        ],
+        'admin.list' => [
             'web'   => [\App\Http\Controllers\User\AttendanceController::class, 'request'],
             'admin' => [\App\Http\Controllers\Admin\AttendanceController::class, 'request'],
         ],
@@ -29,8 +37,6 @@ class GuardControllerRedirect
 
     public function handle(Request $request, Closure $next)
     {
-
-        $path = '/' . ltrim($request->path(), '/');
 
         if (Auth::guard('admin')->check()) {
             $role = 'admin';
@@ -40,14 +46,17 @@ class GuardControllerRedirect
             abort(403, 'Unauthorized');
         }
 
-        if (!isset($this->mapping[$path])) {
+        $routeName = $request->route()->getName();
+
+        if (!isset($this->mapping[$routeName])) {
             return $next($request);
         }
 
-        [$controller_class, $action] = $this->mapping[$path][$role];
-
+        [$controller_class, $action] = $this->mapping[$routeName][$role];
         $controller_instance = app($controller_class);
 
-        return $controller_instance->$action($request, ...array_values($request->route()->parameters()));
+        return $controller_instance->$action(
+            $request,...array_values($request->route()->parameters())
+        );
     }
 }

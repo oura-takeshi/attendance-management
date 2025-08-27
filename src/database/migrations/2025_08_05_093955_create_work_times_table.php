@@ -11,13 +11,13 @@ class CreateWorkTimesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('work_times', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->dateTime('start_time');
-            $table->dateTime('end_time')->nullable();
+            $table->foreignId('attendance_day_id')->constrained()->cascadeOnDelete();
+            $table->time('start_time');
+            $table->time('end_time')->nullable();
             $table->timestamps();
         });
     }
@@ -27,7 +27,7 @@ class CreateWorkTimesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('work_times');
     }

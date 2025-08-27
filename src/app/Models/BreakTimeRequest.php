@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class WorkTime extends Model
+class BreakTimeRequest extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'attendance_day_id',
+        'work_time_request_id',
         'start_time',
         'end_time'
     ];
@@ -20,15 +20,8 @@ class WorkTime extends Model
         'end_time' => 'datetime',
     ];
 
-
-
-    public function attendanceDay()
+    public function workTimeRequest()
     {
-        return $this->belongsTo(AttendanceDay::class);
-    }
-
-    public function breakTimes()
-    {
-        return $this->hasMany(BreakTime::class);
+        return $this->belongsTo(WorkTimeRequest::class);
     }
 }

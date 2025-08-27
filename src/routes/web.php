@@ -26,6 +26,6 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/attendance/list/{year?}/{month?}', [AttendanceController::class, 'list']);
 });
 Route::middleware(['auth:web', 'guard.redirect'])->group(function () {
-    Route::get('/attendance/{work_time_id}', fn() => null);
-    Route::get('/stamp_correction_request/list', fn() => null);
+    Route::get('/attendance/{work_time_id}', fn() => null)->name('user.detail');
+    Route::get('/stamp_correction_request/list', fn() => null)->name('user.list');
 });

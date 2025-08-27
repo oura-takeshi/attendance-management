@@ -11,14 +11,14 @@ class CreateWorkTimeRequestsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('work_time_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
-            $table->string('reason');
+            $table->foreignId('attendance_day_id')->constrained()->cascadeOnDelete();
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->text('reason');
             $table->tinyInteger('approval')->unsigned()->comment('ステータス 1:承認待ち、2:承認済み');
             $table->timestamps();
         });
@@ -29,7 +29,7 @@ class CreateWorkTimeRequestsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('work_time_requests');
     }
