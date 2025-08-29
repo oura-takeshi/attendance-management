@@ -16,8 +16,8 @@ class CreateWorkTimesTable extends Migration
         Schema::create('work_times', function (Blueprint $table) {
             $table->id();
             $table->foreignId('attendance_day_id')->constrained()->cascadeOnDelete();
-            $table->time('start_time');
-            $table->time('end_time')->nullable();
+            $table->datetime('start_time');
+            $table->datetime('end_time')->nullable();
             $table->timestamps();
         });
     }

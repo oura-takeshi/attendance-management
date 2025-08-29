@@ -15,45 +15,32 @@ class WorkTimesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('work_times')->insert([
-            [
-                'user_id' => '1',
-                'start_time' => Carbon::now()->subDay()->setTime(9, 0),
-                'end_time' => Carbon::now()->subDay()->setTime(17, 0),
-            ],
-            [
-                'user_id' => '1',
-                'start_time' => Carbon::now()->subDays(2)->setTime(9, 0),
-                'end_time' => Carbon::now()->subDays(2)->setTime(17, 0),
-            ],
-            [
-                'user_id' => '1',
-                'start_time' => Carbon::now()->subDays(3)->setTime(9, 0),
-                'end_time' => Carbon::now()->subDays(3)->setTime(17, 0),
-            ],
-        ]);
-        DB::table('break_times')->insert([
-            [
-                'work_time_id' => '2',
-                'start_time' => Carbon::now()->subDays(2)->setTime(11, 0),
-                'end_time' => Carbon::now()->subDays(2)->setTime(12, 0),
-                'created_at' => Carbon::now()->subDays(2)->setTime(11, 0),
-                'updated_at' => Carbon::now()->subDays(2)->setTime(12, 0),
-            ],
-            [
-                'work_time_id' => '3',
-                'start_time' => Carbon::now()->subDays(3)->setTime(11, 0),
-                'end_time' => Carbon::now()->subDays(3)->setTime(12, 0),
-                'created_at' => Carbon::now()->subDays(3)->setTime(11, 0),
-                'updated_at' => Carbon::now()->subDays(3)->setTime(12, 0),
-            ],
-            [
-                'work_time_id' => '3',
-                'start_time' => Carbon::now()->subDays(3)->setTime(14, 0),
-                'end_time' => Carbon::now()->subDays(3)->setTime(15, 0),
-                'created_at' => Carbon::now()->subDays(3)->setTime(14, 0),
-                'updated_at' => Carbon::now()->subDays(3)->setTime(15, 0),
-            ],
-        ]);
+        $start_time = '09:00:00';
+        $end_time = '17:00:00';
+
+        $user_id = 1;
+
+        $today = Carbon::today();
+
+        $one_day_ago = $today->copy()->subDay();
+        $two_days_ago = $today->copy()->subDays(2);
+        $three_days_ago = $today->copy()->subDays(3);
+        $one_month_ago = $today->copy()->subMonth();
+        $dates = [$one_day_ago, $two_days_ago, $three_days_ago, $one_month_ago];
+
+        $user_days = DB::table('attendance_days')
+        ->where('user_id', $user_id)
+        ->whereIn('date', $dates)
+        ->get();
+
+        foreach ($user_days as $user_day) {
+            DB::table('work_times')->insert([
+                'attendance_day_id' => $user_day->id,
+                'start_time' => Carbon::parse("{$user_day->date} {$start_time}"),
+                'end_time' => Carbon::parse("{$user_day->date} {$end_time}"),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

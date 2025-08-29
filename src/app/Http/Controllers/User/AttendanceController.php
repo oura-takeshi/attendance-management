@@ -5,68 +5,96 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\WorkTime;
+use App\Models\AttendanceDay;
 use App\Models\BreakTime;
+use App\Models\WorkTime;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
     public function attendance()
     {
+        $today = Carbon::today();
+        $user_attendance_days = AttendanceDay::where('user_id', Auth::id())->get();
+        $attendance_today = $user_attendance_days->where('date', $today)->first();
+        $latest_attendance_day =  $user_attendance_days->sortByDesc('date')->first();
+
+        if ($attendance_today) {
+            if ($latest_attendance_day) {
+                $start_date = Carbon::parse($latest_attendance_day->date)->addDay();
+            } else {
+                $start_date = $today;
+            }
+            for ($date = $start_date->copy(); $date->lte($today); $date->addDay()) {
+                AttendanceDay::create([
+                    'user_id' => Auth::id(),
+                    'date' => $date->toDateString(),
+                ]);
+            }
+        }
+
         $now = Carbon::now();
         $date = $now->format('w');
         $week = ['日', '月', '火', '水', '木', '金', '土'];
         $day_of_week = $week[$date];
 
-        $today = Carbon::today();
-        $exist_work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
-
-        if (!$exist_work_time) {
-            $exist_work_end_time = null;
-            $exist_break_time = null;
-            $exist_break_end_time = null;
-        } else {
-            $exist_work_end_time = $exist_work_time->end_time;
-
-            $exist_break_time = BreakTime::where('work_time_id', $exist_work_time->id)->whereDate('start_time', $today)->latest()->first();
-
-            if (!$exist_break_time) {
-                $exist_break_end_time = null;
+        $attendance_today->load('workTime');
+        $work_time = $attendance_today->workTime;
+        if ($work_time) {
+            $work_end_time = $work_time->end_time;
+            $work_time->load('breakTimes');
+            $break_times = $work_time->breakTimes;
+            if ($break_times->isNotEmpty()) {
+                $break_time = $work_time->breakTimes->sortByDesc('start_time')->first();
+                $break_end_time = $break_time->end_time;
             } else {
-                $exist_break_end_time = $exist_break_time->end_time;
+                $break_time = null;
             }
         }
 
-        return view('user.attendance', compact('now', 'day_of_week', 'exist_work_time', 'exist_work_end_time', 'exist_break_time', 'exist_break_end_time'));
+        if (!$work_time) {
+            $status = 1;
+        } elseif (!$work_end_time && (!$break_time || $break_end_time)) {
+            $status = 2;
+        } elseif (!$work_end_time && !$break_end_time) {
+            $status = 3;
+        } else {
+            $status = 4;
+        }
+
+        return view('user.attendance', compact('now', 'day_of_week', 'status'));
     }
 
     public function workCreate()
     {
         $today = Carbon::today();
-        $exist_work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
+        $attendance_today = AttendanceDay::where('user_id', Auth::id())->where('date', $today)->first();
 
-        if ($exist_work_time) {
-            $exist_work_end_time = $exist_work_time->end_time;
-
-            if ($exist_work_end_time) {
-                return redirect('/attendance');
+        $attendance_today->load('workTime');
+        $work_time = $attendance_today->workTime;
+        if ($work_time) {
+            $work_end_time = $work_time->end_time;
+            $work_time->load('breakTimes');
+            $break_times = $work_time->breakTimes;
+            if ($break_times->isNotEmpty()) {
+                $break_time = $work_time->breakTimes->sortByDesc('start_time')->first();
+                $break_end_time = $break_time->end_time;
             } else {
-                $exist_break_time = BreakTime::where('work_time_id', $exist_work_time->id)->whereDate('start_time', $today)->latest()->first();
-
-                if ($exist_break_time) {
-                    $exist_break_end_time = $exist_break_time->end_time;
-
-                    if (!$exist_break_end_time) {
-                        return redirect('/attendance');
-                    }
-                }
-                $exist_work_time->update(['end_time' => Carbon::now()]);
+                $break_time = null;
             }
-        } else {
+        }
+
+        if (!$work_time) {
             WorkTime::create([
-                'user_id' => Auth::id(),
+                'attendance_day_id' => $attendance_today->id,
                 'start_time' => Carbon::now(),
             ]);
+        } elseif (!$work_end_time && (!$break_times || $break_end_time)) {
+            $work_time->update(['end_time' => Carbon::now()]);
+        } elseif (!$work_end_time && !$break_end_time) {
+            return redirect('/attendance');
+        } else {
+            return redirect('/attendance');
         }
 
         return redirect('/attendance');
@@ -75,36 +103,33 @@ class AttendanceController extends Controller
     public function breakCreate()
     {
         $today = Carbon::today();
-        $exist_work_time = WorkTime::where('user_id', Auth::id())->whereDate('start_time', $today)->first();
+        $attendance_today = AttendanceDay::where('user_id', Auth::id())->where('date', $today)->first();
 
-        if (!$exist_work_time) {
-            return redirect('/attendance');
-        } else {
-            $exist_work_end_time = $exist_work_time->end_time;
-
-            if ($exist_work_end_time) {
-                return redirect('/attendance');
+        $attendance_today->load('workTime');
+        $work_time = $attendance_today->workTime;
+        if ($work_time) {
+            $work_end_time = $work_time->end_time;
+            $work_time->load('breakTimes');
+            $break_times = $work_time->breakTimes;
+            if ($break_times->isNotEmpty()) {
+                $break_time = $work_time->breakTimes->sortByDesc('start_time')->first();
+                $break_end_time = $break_time->end_time;
+            } else {
+                $break_time = null;
             }
         }
 
-        $exist_break_time = BreakTime::where('work_time_id', $exist_work_time->id)->whereDate('start_time', $today)->latest()->first();
-
-        if (!$exist_break_time) {
+        if (!$work_time) {
+            return redirect('/attendance');
+        } elseif (!$work_end_time && (!$break_time || $break_end_time)) {
             BreakTime::create([
-                'work_time_id' => $exist_work_time->id,
+                'work_time_id' => $work_time->id,
                 'start_time' => Carbon::now(),
             ]);
+        } elseif (!$work_end_time && !$break_end_time) {
+            $break_time->update(['end_time' => Carbon::now()]);
         } else {
-            $exist_break_end_time = $exist_break_time->end_time;
-
-            if ($exist_break_end_time) {
-                BreakTime::create([
-                    'work_time_id' => $exist_work_time->id,
-                    'start_time' => Carbon::now(),
-                ]);
-            } else {
-                $exist_break_time->update(['end_time' => Carbon::now()]);
-            }
+            return redirect('/attendance');
         }
 
         return redirect('/attendance');
@@ -173,7 +198,6 @@ class AttendanceController extends Controller
 
                 $actual_work_time_minutes = $total_work_time_minutes - $total_break_time_minutes;
                 $actual_work_time = Carbon::now()->setTime(0, 0)->addMinutes($actual_work_time_minutes);
-
             } else {
                 $work_start_time = null;
                 $work_end_time = null;

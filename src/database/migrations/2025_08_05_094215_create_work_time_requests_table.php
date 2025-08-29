@@ -16,8 +16,8 @@ class CreateWorkTimeRequestsTable extends Migration
         Schema::create('work_time_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('attendance_day_id')->constrained()->cascadeOnDelete();
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->datetime('start_time');
+            $table->datetime('end_time');
             $table->text('reason');
             $table->tinyInteger('approval')->unsigned()->comment('ステータス 1:承認待ち、2:承認済み');
             $table->timestamps();
