@@ -16,7 +16,7 @@
         <nav class="nav">
             @if ($status === 4)
             <a href="/attendance/list" class="nav__link clock-out">今月の出勤一覧</a>
-            <a href="" class="nav__link clock-out">申請一覧</a>
+            <a href="/stamp_correction_request/list" class="nav__link clock-out">申請一覧</a>
             @else
             <a href="/attendance" class="nav__link">勤怠</a>
             <a href="/attendance/list" class="nav__link">勤怠一覧</a>

@@ -28,10 +28,7 @@ class WorkTimesTableSeeder extends Seeder
         $one_month_ago = $today->copy()->subMonth();
         $dates = [$one_day_ago, $two_days_ago, $three_days_ago, $one_month_ago];
 
-        $user_days = DB::table('attendance_days')
-        ->where('user_id', $user_id)
-        ->whereIn('date', $dates)
-        ->get();
+        $user_days = DB::table('attendance_days')->where('user_id', $user_id)->whereIn('date', $dates)->get();
 
         foreach ($user_days as $user_day) {
             DB::table('work_times')->insert([

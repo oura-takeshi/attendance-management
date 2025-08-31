@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\AttendanceController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Admin Routes
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
@@ -22,10 +22,6 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('/admin/logout', [AuthenticatedSessionController::class, 'adminDestroy']);
     Route::get('/admin/attendance/list', [AttendanceController::class, 'attendance']);
     Route::get('/admin/staff/list', [AttendanceController::class, 'staff']);
-    Route::get('/admin/attendance/satff/{id}', [AttendanceController::class, 'list']);
-    Route::get('/stamp_correction_request/approval/{attendance_correct_request}', [AttendanceController::class, 'approval']);
-});
-Route::middleware(['auth:admin', 'guard.redirect'])->group(function () {
-    Route::get('/attendance/{work_time_id}', fn() => null)->name('admin.detail');
-    Route::get('/stamp_correction_request/list', fn() => null)->name('admin.list');
+    Route::get('/admin/attendance/staff/{user_id}', [AttendanceController::class, 'list']);
+    Route::get('/stamp_correction_request/approval/{work_time_request_id}', [AttendanceController::class, 'approval']);
 });

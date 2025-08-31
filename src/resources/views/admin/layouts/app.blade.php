@@ -15,9 +15,9 @@
     <header class="header">
         <img class="header__img-logo" src="{{ asset('storage/images/logo.svg') }}" alt="coachtech">
         <nav class="nav">
-            <a href="" class="nav__link">勤怠一覧</a>
-            <a href="" class="nav__link">スタッフ一覧</a>
-            <a href="" class="nav__link">申請一覧</a>
+            <a href="/admin/attendance/list" class="nav__link">勤怠一覧</a>
+            <a href="/admin/staff/list" class="nav__link">スタッフ一覧</a>
+            <a href="/stamp_correction_request/list" class="nav__link">申請一覧</a>
             <form class="nav__logout" action="/admin/logout" method="post">
                 @csrf
                 <button class="nav__logout-button">ログアウト</button>

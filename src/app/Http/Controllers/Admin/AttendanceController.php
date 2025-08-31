@@ -12,8 +12,18 @@ class AttendanceController extends Controller
         return view('admin.attendance');
     }
 
-    public function detail()
+    public function staff()
     {
-        return view('admin.detail');
+        return view('admin.staff');
+    }
+
+    public function list($user_id)
+    {
+        return view('admin.list');
+    }
+
+    public function approval($work_time_request_id)
+    {
+        return view('admin.approval');
     }
 }

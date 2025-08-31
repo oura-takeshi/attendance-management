@@ -17,7 +17,7 @@
         <nav class="nav">
             <a href="/attendance" class="nav__link">勤怠</a>
             <a href="/attendance/list" class="nav__link">勤怠一覧</a>
-            <a href="" class="nav__link">申請</a>
+            <a href="/stamp_correction_request/list" class="nav__link">申請</a>
             <form class="nav__logout" action="/logout" method="post">
                 @csrf
                 <button class="nav__logout-button">ログアウト</button>

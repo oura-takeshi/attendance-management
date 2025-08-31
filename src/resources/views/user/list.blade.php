@@ -36,22 +36,23 @@
                 <td class="table__desc"></td>
                 @endif
                 @if($date['total_break_time'])
-                <td class="table__desc">{{ $date['total_break_time']->format('G:i') }}</td>
+                <td class="table__desc">{{ $date['total_break_time'] }}</td>
                 @else
                 <td class="table__desc"></td>
                 @endif
                 @if($date['actual_work_time'])
-                <td class="table__desc">{{ $date['actual_work_time']->format('G:i') }}</td>
+                <td class="table__desc">{{ $date['actual_work_time'] }}</td>
                 @else
                 <td class="table__desc"></td>
                 @endif
-                @if($date['work_time_id'])
+                @if($date['attendance_day_id'])
                 <td class="table__desc">
-                    <a class="table__detail-link" href="/attendance/{{ $date['work_time_id'] }}">詳細</a>
+                    <a class="table__detail-link" href="/attendance/{{ $date['attendance_day_id'] }}">詳細</a>
                 </td>
                 @else
-                <td class="table__desc">詳細</td>
+                <td class="table__desc"></td>
                 @endif
+
             </tr>
             @endforeach
         </table>

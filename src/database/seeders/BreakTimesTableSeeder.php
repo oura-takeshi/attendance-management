@@ -28,14 +28,9 @@ class BreakTimesTableSeeder extends Seeder
         $one_day_ago = $today->copy()->subDay();
         $two_days_ago = $today->copy()->subDays(2);
 
-        $first_day = DB::table('attendance_days')
-            ->where('user_id', $user_id)
-            ->where('date', $one_day_ago)
-            ->first();
+        $first_day = DB::table('attendance_days')->where('user_id', $user_id)->where('date', $one_day_ago)->first();
 
-        $first_work_time = DB::table('work_times')
-            ->where('attendance_day_id', $first_day->id)
-            ->first();
+        $first_work_time = DB::table('work_times')->where('attendance_day_id', $first_day->id)->first();
 
         DB::table('break_times')->insert([
             [
@@ -54,14 +49,9 @@ class BreakTimesTableSeeder extends Seeder
             ],
         ]);
 
-        $second_day = DB::table('attendance_days')
-            ->where('user_id', $user_id)
-            ->where('date', $two_days_ago)
-            ->first();
+        $second_day = DB::table('attendance_days')->where('user_id', $user_id)->where('date', $two_days_ago)->first();
 
-        $second_work_time = DB::table('work_times')
-            ->where('attendance_day_id', $second_day->id)
-            ->first();
+        $second_work_time = DB::table('work_times')->where('attendance_day_id', $second_day->id)->first();
 
         DB::table('break_times')->insert([
             [
