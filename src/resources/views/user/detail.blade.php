@@ -12,35 +12,49 @@
             <table class="table__inner">
                 <tr class="table__row">
                     <th class="table__header">名前</th>
-                    <td class="table__desc">西&emsp;伶奈</td>
+                    <td class="table__desc">{{ $user_name }}</td>
                 </tr>
                 <tr class="table__row">
                     <th class="table__header">日付</th>
                     <td class="table__desc">
-                        <span>2023年</span>
-                        <span>6月1日</span>
+                        <div class="table__desc-date">
+                            <span>{{$date->format('Y年')}}</span>
+                            <span>{{$date->format('n月j日')}}</span>
+                        </div>
                     </td>
                 </tr>
                 <tr class="table__row">
                     <th class="table__header">出勤・退勤</th>
                     <td class="table__desc">
-                        <input type="time">
-                        <span>~</span>
-                        <input type="time">
+                        <div class="table__desc-time">
+                            <input class="table__desc-time-input" type="time" name="work_start_time" value="{{ old('work_start_time', $work_start_time) }}">
+                            <span>〜</span>
+                            <input class="table__desc-time-input" type="time" name="work_end_time" value="{{ old('work_end_time', $work_end_time) }}">
+                        </div>
                     </td>
                 </tr>
+                @foreach ($break_times as $index => $break_time)
                 <tr class="table__row">
+                    @if ($index === 0)
                     <th class="table__header">休憩</th>
+                    @else
+                    <th class="table__header">休憩{{ $index + 1 }}</th>
+                    @endif
                     <td class="table__desc">
-                        <input type="time">
-                        <span>~</span>
-                        <input type="time">
+                        <div class="table__desc-time">
+                            <input class="table__desc-time-input" type="time" name="break_time[{{ $index }}][start_time]" value="{{ old('break_time.' . $index . '.start_time', $break_time['start_time']) }}">
+                            <span>〜</span>
+                            <input class="table__desc-time-input" type="time" name="break_time[{{ $index }}][end_time]" value="{{ old('break_time.' . $index . '.end_time', $break_time['end_time']) }}">
+                        </div>
                     </td>
                 </tr>
+                @endforeach
                 <tr class="table__row">
                     <th class="table__header">備考</th>
                     <td class="table__desc">
-                        <textarea name="" id=""></textarea>
+                        <div class="table__desc-reason">
+                            <textarea class="table__desc-reason-textarea" name="reason" id="">{{ old('reason') }}</textarea>
+                        </div>
                     </td>
                 </tr>
             </table>

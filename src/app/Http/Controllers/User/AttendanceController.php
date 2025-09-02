@@ -242,6 +242,7 @@ class AttendanceController extends Controller
             if ($attendance_day) {
                 $attendance_day_id = $attendance_day->id;
             }
+
             $dates[] = [
                 'date' => $date,
                 'day_of_week' => $day_of_week,
@@ -259,7 +260,54 @@ class AttendanceController extends Controller
     public function detail($attendance_day_id)
     {
         if (auth('web')->check()) {
-            return view('user.detail');
+
+            $attendance_day = AttendanceDay::with(['user', 'workTime.breakTimes'])->where('id', $attendance_day_id)->where('user_id', Auth::id())->first();
+            if (!$attendance_day) {
+                return redirect('/attendance/list');
+            }
+
+            $user_name = $attendance_day->user->name;
+            $date = $attendance_day->date;
+
+            $work_start_time = '';
+            $work_end_time = '';
+            $break_times = [];
+
+            if ($attendance_day->workTime) {
+                $work_start_time = $attendance_day->workTime->start_time->format('H:i');
+                $work_end_time = $attendance_day->workTime->end_time->format('H:i');
+
+                if (isset($attendance_day->workTime->breakTimes) && $attendance_day->workTime->breakTimes->isNotEmpty()) {
+                    foreach ($attendance_day->workTime->breakTimes as $index => $break_time) {
+
+                        if ($break_time->start_time) {
+                            $start_time = $break_time->start_time->format('H:i');
+                        } else {
+                            $start_time = '';
+                        }
+
+                        if ($break_time->end_time) {
+                            $end_time = $break_time->end_time->format('H:i');
+                        } else {
+                            $end_time = '';
+                        }
+
+                        $break_times[] = [
+                            'index' => $index,
+                            'start_time' => $start_time,
+                            'end_time' => $end_time,
+                        ];
+                    }
+                }
+            }
+
+            $break_times[] = [
+                'index' => count($break_times),
+                'start_time' => '',
+                'end_time' => '',
+            ];
+
+            return view('user.detail', compact('user_name', 'date', 'work_start_time', 'work_end_time', 'attendance_day', 'break_times'));
         }
 
         if (auth('admin')->check()) {
