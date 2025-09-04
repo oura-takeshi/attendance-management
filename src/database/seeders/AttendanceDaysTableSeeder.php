@@ -19,7 +19,7 @@ class AttendanceDaysTableSeeder extends Seeder
 
         $start_date = $today->copy()->subMonth()->startOfMonth();
 
-        $user_ids = DB::table('users')->pluck('id');
+        $user_ids = DB::table('users')->orderBy('id', 'asc')->pluck('id');
 
         foreach ($user_ids as $user_id) {
             for ($date = $start_date->copy(); $date->lte($today); $date->addDay()) {

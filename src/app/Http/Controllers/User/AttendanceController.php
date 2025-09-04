@@ -9,7 +9,6 @@ use App\Models\AttendanceDay;
 use App\Models\BreakTime;
 use App\Models\WorkTime;
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
 
 class AttendanceController extends Controller
 {
@@ -176,7 +175,6 @@ class AttendanceController extends Controller
         $current_year = $input_date->format('Y');
         $current_month = $input_date->format('m');
 
-
         $first_day = Carbon::create($current_year, $current_month, 1);
         $prev_year = $first_day->copy()->subMonth()->format('Y');
         $prev_month = $first_day->copy()->subMonth()->format('m');
@@ -192,7 +190,7 @@ class AttendanceController extends Controller
             $date = $day->copy();
             $day_of_week = $week[$date->format('w')];
 
-            $attendance_day = AttendanceDay::where('user_id', Auth::id())->whereDate('date', $date)->first();
+            $attendance_day = AttendanceDay::where('user_id', Auth::id())->where('date', $date)->first();
 
             if ($attendance_day && $attendance_day->workTime) {
                 $work_time = $attendance_day->workTime;
@@ -203,21 +201,24 @@ class AttendanceController extends Controller
             $work_start_time = null;
             $work_end_time = null;
             $work_time_minutes = null;
-            $total_break_time_minutes = 0;
+            $total_break_time_minutes = null;
 
             if ($work_time) {
                 $work_start_time = $work_time->start_time;
+
                 if ($work_time->end_time) {
                     $work_end_time = $work_time->end_time;
+                    $work_time_minutes = $work_end_time->diffInMinutes($work_start_time);
                 } else {
-                    $work_end_time = Carbon::now();
+                    $work_time_minutes = Carbon::now()->diffInMinutes($work_start_time);
                 }
-                $work_time_minutes = $work_end_time->diffInMinutes($work_start_time);
 
                 if (isset($work_time->breakTimes) && $work_time->breakTimes->isNotEmpty()) {
                     foreach ($work_time->breakTimes as $break_time) {
                         if ($break_time->end_time) {
                             $total_break_time_minutes += $break_time->end_time->diffInMinutes($break_time->start_time);
+                        } else {
+                            $total_break_time_minutes += Carbon::now()->diffInMinutes($break_time->start_time);
                         }
                     }
                 }
@@ -232,7 +233,7 @@ class AttendanceController extends Controller
             }
 
             $total_break_time_formatted = null;
-            if ($total_break_time_minutes > 0) {
+            if ($total_break_time_minutes !== null) {
                 $hours = intdiv($total_break_time_minutes, 60);
                 $minutes = $total_break_time_minutes % 60;
                 $total_break_time_formatted = sprintf('%d:%02d', $hours, $minutes);
@@ -274,22 +275,26 @@ class AttendanceController extends Controller
             $break_times = [];
 
             if ($attendance_day->workTime) {
-                $work_start_time = $attendance_day->workTime->start_time->format('H:i');
-                $work_end_time = $attendance_day->workTime->end_time->format('H:i');
+                if ($attendance_day->workTime->start_time) {
+                    $work_start_time = $attendance_day->workTime->start_time->format('H:i');
+                }
+
+                if ($attendance_day->workTime->end_time) {
+                    $work_end_time = $attendance_day->workTime->end_time->format('H:i');
+                }
 
                 if (isset($attendance_day->workTime->breakTimes) && $attendance_day->workTime->breakTimes->isNotEmpty()) {
                     foreach ($attendance_day->workTime->breakTimes as $index => $break_time) {
 
+                        $start_time = '';
+                        $end_time = '';
+
                         if ($break_time->start_time) {
                             $start_time = $break_time->start_time->format('H:i');
-                        } else {
-                            $start_time = '';
                         }
 
                         if ($break_time->end_time) {
                             $end_time = $break_time->end_time->format('H:i');
-                        } else {
-                            $end_time = '';
                         }
 
                         $break_times[] = [

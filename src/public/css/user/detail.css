@@ -64,17 +64,21 @@ body {
     height: 91px;
 }
 
-.table__desc-date,
-.table__desc-time {
+.table__desc-name {
+    padding: 0 24px;
+}
+
+.table__desc-date {
+    padding: 0 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.table__desc-reason {
+.table__desc-time {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 14px 0;
 }
 
 .table__desc-time-input {
@@ -97,6 +101,12 @@ body {
     display: none;
 }
 
+.table__desc-reason {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+}
+
 .table__desc-reason-textarea {
     border: 1px solid #D9D9D9;
     border-radius: 4px;
@@ -106,6 +116,8 @@ body {
     min-height: 72px;
     letter-spacing: 0.15em;
     padding: 9px 13px;
+    line-height: 17px;
+    font-family: 'Noto Sans JP', sans-serif;
 }
 
 .form__button {

@@ -52,7 +52,6 @@
                 @else
                 <td class="table__desc"></td>
                 @endif
-
             </tr>
             @endforeach
         </table>

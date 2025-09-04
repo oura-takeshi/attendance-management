@@ -12,7 +12,9 @@
             <table class="table__inner">
                 <tr class="table__row">
                     <th class="table__header">名前</th>
-                    <td class="table__desc">{{ $user_name }}</td>
+                    <td class="table__desc">
+                        <div class="table__desc-name">{{ $user_name }}</div>
+                    </td>
                 </tr>
                 <tr class="table__row">
                     <th class="table__header">日付</th>
