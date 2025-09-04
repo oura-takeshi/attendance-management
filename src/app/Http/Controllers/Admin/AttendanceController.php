@@ -35,7 +35,7 @@ class AttendanceController extends Controller
         $next_month = $current_date->copy()->addDay()->format('m');
         $next_day = $current_date->copy()->addDay()->format('d');
 
-        $attendance_days = AttendanceDay::with(['user', 'workTime.breakTimes'])->where('date', $current_date)->whereHas('workTime')->get();
+        $attendance_days = AttendanceDay::with(['user', 'workTime.breakTimes'])->where('date', $current_date)->whereHas('workTime')->orderBy('user_id', 'asc')->get();
 
         $users = [];
 

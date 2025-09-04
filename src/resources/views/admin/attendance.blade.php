@@ -8,9 +8,9 @@
 <div class="content">
     <h1 class="heading">{{ $current_year->format('Y') }}年{{ $current_month->format('n') }}月{{ $current_day->format('j') }}日の勤怠</h1>
     <div class="info">
-        <a class="info__day-link prev-month-arrow" href="/admin/attendance/list/{{ $prev_year }}/{{ $prev_month }}/{{ $prev_day }}">前日</a>
-        <p class="info__current-month calendar">{{ $current_year->format('Y') }}/{{ $current_month->format('m') }}/{{ $current_day->format('d') }}</p>
-        <a class="info__month-link next-month-arrow" href="/admin/attendance/list/{{ $next_year }}/{{ $next_month }}/{{ $next_day }}">翌日</a>
+        <a class="info__day-link prev-day-arrow" href="/admin/attendance/list/{{ $prev_year }}/{{ $prev_month }}/{{ $prev_day }}">前日</a>
+        <p class="info__current-day calendar">{{ $current_year->format('Y') }}/{{ $current_month->format('m') }}/{{ $current_day->format('d') }}</p>
+        <a class="info__day-link next-day-arrow" href="/admin/attendance/list/{{ $next_year }}/{{ $next_month }}/{{ $next_day }}">翌日</a>
     </div>
     @if (count($users) > 0)
     <div class="table">
