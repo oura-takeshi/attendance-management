@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\AttendanceDay;
 use App\Models\BreakTime;
+use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 
@@ -98,7 +99,9 @@ class AttendanceController extends Controller
 
     public function staff()
     {
-        return view('admin.staff');
+        $users = User::select('id', 'name', 'email')->orderBy('id', 'asc')->get();
+
+        return view('admin.staff', compact('users'));
     }
 
     public function list($user_id)
