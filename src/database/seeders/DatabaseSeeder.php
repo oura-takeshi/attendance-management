@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             MultiAuthTableSeeder::class,
             AttendanceDaysTableSeeder::class,
             WorkTimesTableSeeder::class,
-            BreakTimesTableSeeder::class,
+            WorkTimeRequestsTableSeeder::class,
         ]);
     }
 }
