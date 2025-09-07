@@ -26,6 +26,6 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/attendance/list/{year?}/{month?}', [AttendanceController::class, 'list']);
 });
 Route::middleware('auth:web,admin')->group(function () {
-    Route::get('/attendance/{attendance_day_id}', [AttendanceController::class, 'detail']);
     Route::get('/stamp_correction_request/list', [AttendanceController::class, 'request']);
+    Route::get('/attendance/{attendance_day_id}', [AttendanceController::class, 'detail']);
 });

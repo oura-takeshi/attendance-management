@@ -21,7 +21,7 @@
             <td class="table__desc">{{ $user->name }}</td>
             <td class="table__desc">{{ $user->email }}</td>
             <td class="table__desc">
-                <a class="list-link" href="/admin/attendance/staff/{{ $user->id }}">詳細</a>
+                <a class="table__list-link" href="/admin/attendance/staff/{{ $user->id }}">詳細</a>
             </td>
         </tr>
         @endforeach

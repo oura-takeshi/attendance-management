@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\AttendanceDay;
 use App\Models\BreakTime;
 use App\Models\WorkTime;
+use App\Models\WorkTimeRequest;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -362,7 +363,15 @@ class AttendanceController extends Controller
     {
         if (auth('web')->check()) {
             $param = $request->page;
-            return view('user.request', compact('param'));
+            $user_requests = WorkTimeRequest::join('attendance_days', 'work_time_requests.attendance_day_id', '=', 'attendance_days.id')->where('attendance_days.user_id', Auth::id())->with(['attendanceDay.user'])->select('work_time_requests.*');
+
+            if ($param !== "approved") {
+                $input_requests = $user_requests->where('work_time_requests.approval', 1)->orderby('attendance_days.date', 'desc')->get();
+            } else {
+                $input_requests = $user_requests->where('work_time_requests.approval', 2)->orderby('attendance_days.date', 'desc')->orderby('work_time_requests.created_at', 'desc')->get();
+            }
+
+            return view('user.request', compact('param', 'input_requests'));
         }
 
         if (auth('admin')->check()) {
