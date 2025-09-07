@@ -261,20 +261,58 @@ class AttendanceController extends Controller
     public function detail($attendance_day_id)
     {
         if (auth('web')->check()) {
-
-            $attendance_day = AttendanceDay::with(['user', 'workTime.breakTimes'])->where('id', $attendance_day_id)->where('user_id', Auth::id())->first();
+            $attendance_day = AttendanceDay::with(['user', 'workTime.breakTimes', 'workTimeRequests.breakTimeRequests'])->where('id', $attendance_day_id)->where('user_id', Auth::id())->first();
             if (!$attendance_day) {
                 return redirect('/attendance/list');
             }
 
+            $status = 1;
             $user_name = $attendance_day->user->name;
             $date = $attendance_day->date;
 
             $work_start_time = '';
             $work_end_time = '';
             $break_times = [];
+            $reason = null;
 
-            if ($attendance_day->workTime) {
+            $pending_request = $attendance_day->workTimeRequests->where('approval', 1)->first();
+
+            if ($pending_request) {
+                $status = 2;
+
+                if ($pending_request->start_time) {
+                    $work_start_time = $pending_request->start_time->format('H:i');
+                }
+
+                if ($pending_request->end_time) {
+                    $work_end_time = $pending_request->end_time->format('H:i');
+                }
+
+                if (isset($pending_request->breakTimeRequests) && $pending_request->breakTimeRequests->isNotEmpty()) {
+                    foreach ($pending_request->breakTimeRequests as $index => $break_time) {
+
+                        $start_time = '';
+                        $end_time = '';
+
+                        if ($break_time->start_time) {
+                            $start_time = $break_time->start_time->format('H:i');
+                        }
+
+                        if ($break_time->end_time) {
+                            $end_time = $break_time->end_time->format('H:i');
+                        }
+
+                        $break_times[] = [
+                            'index' => $index,
+                            'start_time' => $start_time,
+                            'end_time' => $end_time,
+                        ];
+                    }
+                }
+
+                $reason = $pending_request->reason;
+
+            } elseif ($attendance_day->workTime) {
                 if ($attendance_day->workTime->start_time) {
                     $work_start_time = $attendance_day->workTime->start_time->format('H:i');
                 }
@@ -312,7 +350,7 @@ class AttendanceController extends Controller
                 'end_time' => '',
             ];
 
-            return view('user.detail', compact('user_name', 'date', 'work_start_time', 'work_end_time', 'attendance_day', 'break_times'));
+            return view('user.detail', compact('user_name', 'date', 'status', 'work_start_time', 'work_end_time', 'break_times', 'reason'));
         }
 
         if (auth('admin')->check()) {
@@ -320,10 +358,11 @@ class AttendanceController extends Controller
         }
     }
 
-    public function request()
+    public function request(Request $request)
     {
         if (auth('web')->check()) {
-            return view('user.request');
+            $param = $request->page;
+            return view('user.request', compact('param'));
         }
 
         if (auth('admin')->check()) {

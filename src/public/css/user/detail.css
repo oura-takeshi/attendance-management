@@ -28,7 +28,6 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: #ffffff;
-    margin-bottom: 56px;
 }
 
 .table__inner {
@@ -61,7 +60,6 @@ body {
     color: #000000;
     letter-spacing: 0.15em;
     padding-right: 251px;
-    height: 91px;
 }
 
 .table__desc-name {
@@ -104,7 +102,6 @@ body {
 .table__desc-reason {
     display: flex;
     align-items: center;
-    padding: 14px 0;
 }
 
 .table__desc-reason-textarea {
@@ -115,12 +112,23 @@ body {
     width: 100%;
     min-height: 72px;
     letter-spacing: 0.15em;
+    margin: 14px 0;
     padding: 9px 13px;
     line-height: 17px;
     font-family: 'Noto Sans JP', sans-serif;
 }
 
+.table__desc-reason-content {
+    margin: 0;
+}
+
+.padding {
+    padding: 0 24px;
+}
+
 .form__button {
+    width: 100%;
+    margin-top: 56px;
     text-align: right;
 }
 
@@ -135,4 +143,20 @@ body {
     color: #FFFFFF;
     cursor: pointer;
     letter-spacing: 0.15em;
+}
+
+.comment {
+    width: 100%;
+    margin-top: 25px;
+    text-align: right;
+}
+
+.comment__inner {
+    margin: 0;
+    line-height: 21px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #FF0000;
+    opacity: 50%;
 }

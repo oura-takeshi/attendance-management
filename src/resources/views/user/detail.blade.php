@@ -7,6 +7,7 @@
 @section('content')
 <div class="content">
     <h1 class="heading">勤怠詳細</h1>
+    @if ($status === 1)
     <form class="form" action="">
         <div class="table">
             <table class="table__inner">
@@ -65,5 +66,63 @@
             <button class="form__button-submit">修正</button>
         </div>
     </form>
+    @else
+    <div class="table">
+        <table class="table__inner">
+            <tr class="table__row">
+                <th class="table__header">名前</th>
+                <td class="table__desc">
+                    <div class="table__desc-name">{{ $user_name }}</div>
+                </td>
+            </tr>
+            <tr class="table__row">
+                <th class="table__header">日付</th>
+                <td class="table__desc">
+                    <div class="table__desc-date">
+                        <span>{{ $date->format('Y年') }}</span>
+                        <span>{{ $date->format('n月j日') }}</span>
+                    </div>
+                </td>
+            </tr>
+            <tr class="table__row">
+                <th class="table__header">出勤・退勤</th>
+                <td class="table__desc">
+                    <div class="table__desc-time padding">
+                        <span>{{ $work_start_time }}</span>
+                        <span>〜</span>
+                        <span>{{ $work_end_time }}</span>
+                    </div>
+                </td>
+            </tr>
+            @foreach ($break_times as $index => $break_time)
+            <tr class="table__row">
+                @if ($index === 0)
+                <th class="table__header">休憩</th>
+                @else
+                <th class="table__header">休憩{{ $index + 1 }}</th>
+                @endif
+                <td class="table__desc">
+                    <div class="table__desc-time padding">
+                        <span>{{ $break_time['start_time'] }}</span>
+                        <span>〜</span>
+                        <span>{{ $break_time['end_time'] }}</span>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+            <tr class="table__row">
+                <th class="table__header">備考</th>
+                <td class="table__desc">
+                    <div class="table__desc-reason padding">
+                        <p class="table__desc-reason-content">{{ $reason }}</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="comment">
+        <p class="comment__inner">*承認待ちのため修正はできません。</p>
+    </div>
+    @endif
 </div>
 @endsection
