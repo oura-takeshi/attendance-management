@@ -130,3 +130,18 @@ body {
 .date {
     letter-spacing: 0;
 }
+
+.comment {
+    width: 100%;
+    text-align: center;
+    margin-top: 44px;
+}
+
+.comment__inner {
+    margin: 0;
+    line-height: 21px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #737373;
+}

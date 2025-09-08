@@ -46,6 +46,14 @@
             @endforeach
         </table>
     </div>
+    @else
+    <div class="comment">
+        @if ($param !== "approved")
+        <p class="comment__inner">*承認待ちの申請はまだありません。</p>
+        @else
+        <p class="comment__inner">*承認済みの申請はまだありません。</p>
+        @endif
+    </div>
     @endif
 </div>
 @endsection

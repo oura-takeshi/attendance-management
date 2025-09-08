@@ -49,6 +49,10 @@
             @endforeach
         </table>
     </div>
+    @else
+    <div class="comment">
+        <p class="comment__inner">*この日の出勤者はいません。</p>
+    </div>
     @endif
 </div>
 @endsection

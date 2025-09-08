@@ -8,7 +8,9 @@
 <div class="content">
     <h1 class="heading">スタッフ一覧</h1>
     @if ($users->isEmpty())
-    <p>ユーザーはまだ登録されていません</p>
+    <div class="comment">
+        <p class="comment__inner">*ユーザーはまだ登録されていません。</p>
+    </div>
     @else
     <table class="table">
         <tr class="table__row">
