@@ -264,7 +264,7 @@ class AttendanceController extends Controller
         if (auth('web')->check()) {
             $attendance_day = AttendanceDay::with(['user', 'workTime.breakTimes', 'workTimeRequests.breakTimeRequests'])->where('id', $attendance_day_id)->where('user_id', Auth::id())->first();
             if (!$attendance_day) {
-                return redirect('/attendance/list');
+                return redirect('/attendance');
             }
 
             $status = 1;
