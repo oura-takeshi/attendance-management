@@ -24,6 +24,7 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/attendance/work', [AttendanceController::class, 'workCreate']);
     Route::get('/attendance/break', [AttendanceController::class, 'breakCreate']);
     Route::get('/attendance/list/{year?}/{month?}', [AttendanceController::class, 'list']);
+    Route::post('/attendance/request', [AttendanceController::class, 'requestCreate']);
 });
 Route::middleware('auth:web,admin')->group(function () {
     Route::get('/stamp_correction_request/list', [AttendanceController::class, 'request']);

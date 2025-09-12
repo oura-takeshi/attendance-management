@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\User\CorrectionRequest;
 use App\Models\AttendanceDay;
 use App\Models\BreakTime;
 use App\Models\WorkTime;
 use App\Models\WorkTimeRequest;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
@@ -91,29 +92,31 @@ class AttendanceController extends Controller
         } else {
             $work_time = null;
         }
-        $work_end_time = null;
-        $break_time = null;
-        $break_end_time = null;
-
-        if ($work_time) {
-            $work_end_time = $work_time->end_time;
-            if (isset($work_time->breakTimes) && $work_time->breakTimes->isNotEmpty()) {
-                $break_time = $work_time->breakTimes->sortByDesc('start_time')->first();
-                if ($break_time) {
-                    $break_end_time = $break_time->end_time;
-                }
-            }
-        }
 
         if (!$work_time) {
             WorkTime::create([
                 'attendance_day_id' => $attendance_today->id,
                 'start_time' => Carbon::now(),
             ]);
-        } elseif (!$work_end_time && (!$break_time || $break_end_time)) {
-            $work_time->update(['end_time' => Carbon::now()]);
-        } elseif (!$work_end_time && ($break_time && !$break_end_time)) {
             return redirect('/attendance');
+        }
+
+        if ($work_time->end_time) {
+            return redirect('/attendance');
+        }
+
+        $break_time = null;
+        $break_end_time = null;
+
+        if (isset($work_time->breakTimes) && $work_time->breakTimes->isNotEmpty()) {
+            $break_time = $work_time->breakTimes->sortByDesc('start_time')->first();
+            if ($break_time) {
+                $break_end_time = $break_time->end_time;
+            }
+        }
+
+        if (!$break_time || $break_end_time) {
+            $work_time->update(['end_time' => Carbon::now()]);
         }
 
         return redirect('/attendance');
@@ -141,7 +144,10 @@ class AttendanceController extends Controller
             return redirect('/attendance');
         }
 
-        $work_end_time = null;
+        if ($work_time->end_time) {
+            return redirect('/attendance');
+        }
+
         $break_time = null;
         $break_end_time = null;
 
@@ -152,12 +158,12 @@ class AttendanceController extends Controller
             }
         }
 
-        if (!$work_end_time && (!$break_time || $break_end_time)) {
+        if (!$break_time || $break_end_time) {
             BreakTime::create([
                 'work_time_id' => $work_time->id,
                 'start_time' => Carbon::now(),
             ]);
-        } elseif (!$work_end_time && ($break_time && !$break_end_time)) {
+        } else {
             $break_time->update(['end_time' => Carbon::now()]);
         }
 
@@ -277,6 +283,7 @@ class AttendanceController extends Controller
             $reason = null;
 
             $pending_request = $attendance_day->workTimeRequests->where('approval', 1)->first();
+            $approved_request = $attendance_day->workTimeRequests->where('approval', 2)->sortByDesc('created_at')->first();
 
             if ($pending_request) {
                 $status = 2;
@@ -312,7 +319,38 @@ class AttendanceController extends Controller
                 }
 
                 $reason = $pending_request->reason;
+            } elseif ($approved_request) {
+                if ($approved_request->start_time) {
+                    $work_start_time = $approved_request->start_time->format('H:i');
+                }
 
+                if ($approved_request->end_time) {
+                    $work_end_time = $approved_request->end_time->format('H:i');
+                }
+
+                if (isset($approved_request->breakTimeRequests) && $approved_request->breakTimeRequests->isNotEmpty()) {
+                    foreach ($approved_request->breakTimeRequests as $index => $break_time) {
+
+                        $start_time = '';
+                        $end_time = '';
+
+                        if ($break_time->start_time) {
+                            $start_time = $break_time->start_time->format('H:i');
+                        }
+
+                        if ($break_time->end_time) {
+                            $end_time = $break_time->end_time->format('H:i');
+                        }
+
+                        $break_times[] = [
+                            'index' => $index,
+                            'start_time' => $start_time,
+                            'end_time' => $end_time,
+                        ];
+                    }
+                }
+
+                $reason = $approved_request->reason;
             } elseif ($attendance_day->workTime) {
                 if ($attendance_day->workTime->start_time) {
                     $work_start_time = $attendance_day->workTime->start_time->format('H:i');
@@ -377,5 +415,10 @@ class AttendanceController extends Controller
         if (auth('admin')->check()) {
             return view('admin.request');
         }
+    }
+
+    public function requestCreate(CorrectionRequest $request)
+    {
+        return redirect('/attendance');
     }
 }

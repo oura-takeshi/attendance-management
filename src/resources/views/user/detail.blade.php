@@ -8,7 +8,8 @@
 <div class="content">
     <h1 class="heading">勤怠詳細</h1>
     @if ($status === 1)
-    <form class="form" action="">
+    <form class="form" action="/attendance/request" method="post">
+        @csrf
         <div class="table">
             <table class="table__inner">
                 <tr class="table__row">
@@ -34,6 +35,11 @@
                             <span>〜</span>
                             <input class="table__desc-time-input" type="time" name="work_end_time" value="{{ old('work_end_time', $work_end_time) }}">
                         </div>
+                        <div class="table__error-message">
+                            @error('work_start_time')
+                            {{ $message }}
+                            @enderror
+                        </div>
                     </td>
                 </tr>
                 @foreach ($break_times as $index => $break_time)
@@ -49,6 +55,16 @@
                             <span>〜</span>
                             <input class="table__desc-time-input" type="time" name="break_time[{{ $index }}][end_time]" value="{{ old('break_time.' . $index . '.end_time', $break_time['end_time']) }}">
                         </div>
+                        <div class="table__error-message">
+                            @error('break_time.' . $index . '.start_time')
+                            {{ $message }}
+                            @enderror
+                        </div>
+                        <div class="table__error-message">
+                            @error('break_time.' . $index . '.end_time')
+                            {{ $message }}
+                            @enderror
+                        </div>
                     </td>
                 </tr>
                 @endforeach
@@ -56,7 +72,12 @@
                     <th class="table__header">備考</th>
                     <td class="table__desc">
                         <div class="table__desc-reason">
-                            <textarea class="table__desc-reason-textarea" name="reason" id="">{{ old('reason') }}</textarea>
+                            <textarea class="table__desc-reason-textarea" name="reason" id="">{{ old('reason', $reason) }}</textarea>
+                        </div>
+                        <div class="table__error-message">
+                            @error('reason')
+                            {{ $message }}
+                            @enderror
                         </div>
                     </td>
                 </tr>
