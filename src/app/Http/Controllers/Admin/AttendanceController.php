@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CorrectionRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\AttendanceDay;
 use App\Models\BreakTime;
 use App\Models\User;
@@ -204,6 +204,11 @@ class AttendanceController extends Controller
         }
 
         return view('admin.list', compact('user_name', 'user_id', 'current_year', 'current_month', 'prev_year', 'prev_month', 'next_year', 'next_month', 'dates'));
+    }
+
+    public function workUpdate(CorrectionRequest $request)
+    {
+        return redirect('/admin/attendance/list');
     }
 
     public function approval($work_time_request_id)

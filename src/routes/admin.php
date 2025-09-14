@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\AttendanceController;
 |
 */
 
-Route::get('/admin/login', [AuthController::class, 'adminShowLogin'])->name('admin.login');
+Route::get('/admin/login', [AuthController::class, 'adminLoginShow'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login.post');
 Route::middleware('auth:admin')->group(function () {
     Route::post('/admin/logout', [AuthenticatedSessionController::class, 'adminDestroy']);
@@ -24,4 +24,5 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/admin/staff/list', [AttendanceController::class, 'staff']);
     Route::get('/admin/attendance/staff/{user_id}/{year?}/{month?}', [AttendanceController::class, 'list']);
     Route::get('/stamp_correction_request/approval/{work_time_request_id}', [AttendanceController::class, 'approval']);
+    Route::post('/admin/attendance/work', [AttendanceController::class, 'workUpdate']);
 });

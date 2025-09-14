@@ -7,7 +7,7 @@
 @section('content')
 <div class="content">
     <h1 class="heading">勤怠詳細</h1>
-    <form class="form" action="" method="post">
+    <form class="form" action="/admin/attendance/work" method="post">
         @csrf
         <div class="table">
             <table class="table__inner">
