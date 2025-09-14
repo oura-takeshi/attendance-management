@@ -9,12 +9,15 @@ use App\Models\BreakTime;
 use App\Models\BreakTimeRequest;
 use App\Models\WorkTime;
 use App\Models\WorkTimeRequest;
+use App\Traits\CombinesDateTime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
+    use CombinesDateTime;
+
     public function attendance()
     {
         $today = Carbon::today();
@@ -180,18 +183,14 @@ class AttendanceController extends Controller
         } else {
             $input_date = Carbon::now()->startOfMonth();
         }
-        $current_year = $input_date->format('Y');
-        $current_month = $input_date->format('m');
 
-        $first_day = Carbon::create($current_year, $current_month, 1);
-        $prev_year = $first_day->copy()->subMonth()->format('Y');
-        $prev_month = $first_day->copy()->subMonth()->format('m');
-        $next_year = $first_day->copy()->addMonth()->format('Y');
-        $next_month = $first_day->copy()->addMonth()->format('m');
+        $current_date = $input_date->copy()->format('Y/m');
+        $prev_month_date = $input_date->copy()->subMonth()->format('Y/m');
+        $next_month_date = $input_date->copy()->addMonth()->format('Y/m');
 
         $dates = [];
-        $start_date = $first_day;
-        $end_date = $first_day->copy()->endOfMonth();
+        $start_date = $input_date;
+        $end_date = $input_date->copy()->endOfMonth();
         $week = ['日', '月', '火', '水', '木', '金', '土'];
 
         for ($day = $start_date->copy(); $day->lte($end_date); $day->addDay()) {
@@ -263,7 +262,7 @@ class AttendanceController extends Controller
             ];
         }
 
-        return view('user.list', compact('current_year', 'current_month', 'prev_year', 'prev_month', 'next_year', 'next_month', 'dates'));
+        return view('user.list', compact('current_date', 'prev_month_date', 'next_month_date', 'dates'));
     }
 
     public function detail($attendance_day_id)
@@ -298,7 +297,9 @@ class AttendanceController extends Controller
                 }
 
                 if (isset($pending_request->breakTimeRequests) && $pending_request->breakTimeRequests->isNotEmpty()) {
-                    foreach ($pending_request->breakTimeRequests as $index => $break_time) {
+                    $sorted_break_times = $pending_request->breakTimeRequests->sortBy('start_time')->values();
+
+                    foreach ($sorted_break_times as $index => $break_time) {
 
                         $start_time = '';
                         $end_time = '';
@@ -330,7 +331,9 @@ class AttendanceController extends Controller
                 }
 
                 if (isset($approved_request->breakTimeRequests) && $approved_request->breakTimeRequests->isNotEmpty()) {
-                    foreach ($approved_request->breakTimeRequests as $index => $break_time) {
+                    $sorted_break_times = $approved_request->breakTimeRequests->sortBy('start_time')->values();
+
+                    foreach ($sorted_break_times as $index => $break_time) {
 
                         $start_time = '';
                         $end_time = '';
@@ -362,7 +365,9 @@ class AttendanceController extends Controller
                 }
 
                 if (isset($attendance_day->workTime->breakTimes) && $attendance_day->workTime->breakTimes->isNotEmpty()) {
-                    foreach ($attendance_day->workTime->breakTimes as $index => $break_time) {
+                    $sorted_break_times = $attendance_day->workTime->breakTimes->sortBy('start_time')->values();
+
+                    foreach ($sorted_break_times as $index => $break_time) {
 
                         $start_time = '';
                         $end_time = '';
@@ -416,7 +421,9 @@ class AttendanceController extends Controller
                 }
 
                 if (isset($attendance_day->workTime->breakTimes) && $attendance_day->workTime->breakTimes->isNotEmpty()) {
-                    foreach ($attendance_day->workTime->breakTimes as $index => $break_time) {
+                    $sorted_break_times = $attendance_day->workTime->breakTimes->sortBy('start_time')->values();
+
+                    foreach ($sorted_break_times as $index => $break_time) {
 
                         $start_time = '';
                         $end_time = '';
@@ -444,7 +451,7 @@ class AttendanceController extends Controller
                 'end_time' => '',
             ];
 
-            return view('admin.detail', compact('user_name', 'date', 'work_start_time', 'work_end_time', 'break_times'));
+            return view('admin.detail', compact('attendance_day_id', 'user_name', 'date', 'work_start_time', 'work_end_time', 'break_times'));
         }
     }
 
@@ -480,30 +487,23 @@ class AttendanceController extends Controller
             'approval' => 1,
         ]);
 
-        foreach ($request->break_time as $break_time) {
-            $break_start_time = $break_time['start_time'];
-            $break_end_time = $break_time['end_time'];
+        if ($work_time_request->start_time) {
+            foreach ($request->break_time as $break_time) {
+                $break_start_time = $break_time['start_time'];
+                $break_end_time = $break_time['end_time'];
 
-            if (!$break_start_time && !$break_end_time) {
-                continue;
+                if (!$break_start_time && !$break_end_time) {
+                    continue;
+                }
+
+                BreakTimeRequest::create([
+                    'work_time_request_id' => $work_time_request->id,
+                    'start_time' => $this->combineDateTime($attendance_day->date, $break_start_time),
+                    'end_time' => $this->combineDateTime($attendance_day->date, $break_end_time),
+                ]);
             }
-
-            BreakTimeRequest::create([
-                'work_time_request_id' => $work_time_request->id,
-                'start_time' => $this->combineDateTime($attendance_day->date, $break_start_time),
-                'end_time' => $this->combineDateTime($attendance_day->date, $break_end_time),
-            ]);
         }
 
         return redirect('/attendance');
-    }
-
-    private function combineDateTime($date, $time)
-    {
-        if (empty($time)) {
-            return null;
-        }
-
-        return Carbon::parse("{$date->format('Y-m-d')} {$time}");
     }
 }

@@ -9,6 +9,7 @@
     <h1 class="heading">勤怠詳細</h1>
     <form class="form" action="/admin/attendance/work" method="post">
         @csrf
+        <input type="hidden" name="attendance_day_id" value="{{ $attendance_day_id }}">
         <div class="table">
             <table class="table__inner">
                 <tr class="table__row">

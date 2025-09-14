@@ -4,17 +4,46 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CorrectionRequest;
-use Illuminate\Http\Request;
 use App\Models\AttendanceDay;
 use App\Models\BreakTime;
 use App\Models\User;
 use App\Models\WorkTime;
+use App\Traits\CombinesDateTime;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
+    use CombinesDateTime;
+
     public function attendance($year = null, $month = null, $day = null)
     {
+        $today = Carbon::today();
+        $user_ids = User::pluck('id');
+
+        foreach ($user_ids as $user_id) {
+            $user_attendance_days = AttendanceDay::where('user_id', $user_id)->get();
+
+            if (isset($user_attendance_days) && $user_attendance_days->isNotEmpty()) {
+                $attendance_today = $user_attendance_days->where('date', $today)->first();
+                if (!$attendance_today) {
+                    $latest_attendance_day = $user_attendance_days->sortByDesc('date')->first();
+                    $start_date = $latest_attendance_day->date->copy()->addDay();
+                    for ($date = $start_date->copy(); $date->lte($today); $date->addDay()) {
+                        AttendanceDay::create([
+                            'user_id' => $user_id,
+                            'date' => $date,
+                        ]);
+                    }
+                }
+            } else {
+                $attendance_today = AttendanceDay::create([
+                    'user_id' => $user_id,
+                    'date' => $today,
+                ]);
+            }
+        }
+
         if ($year && $month && $day) {
             $input_date = Carbon::create($year, $month, $day);
         } elseif ($year && $month) {
@@ -24,19 +53,11 @@ class AttendanceController extends Controller
         } else {
             $input_date = Carbon::today();
         }
-        $current_year = $input_date;
-        $current_month = $input_date;
-        $current_day = $input_date;
 
-        $current_date = Carbon::create($current_year, $current_month, $current_day);
-        $prev_year = $current_date->copy()->subDay()->format('Y');
-        $prev_month = $current_date->copy()->subDay()->format('m');
-        $prev_day = $current_date->copy()->subDay()->format('d');
-        $next_year = $current_date->copy()->addDay()->format('Y');
-        $next_month = $current_date->copy()->addDay()->format('m');
-        $next_day = $current_date->copy()->addDay()->format('d');
+        $prev_day_date = $input_date->copy()->subDay()->format('Y/m/d');
+        $next_day_date = $input_date->copy()->addDay()->format('Y/m/d');
 
-        $attendance_days = AttendanceDay::with(['user', 'workTime.breakTimes'])->where('date', $current_date)->whereHas('workTime')->orderBy('user_id', 'asc')->get();
+        $attendance_days = AttendanceDay::with(['user', 'workTime.breakTimes'])->where('date', $input_date)->whereHas('workTime')->orderBy('user_id', 'asc')->get();
 
         $users = [];
 
@@ -94,7 +115,7 @@ class AttendanceController extends Controller
             }
         }
 
-        return view('admin.attendance', compact('current_year', 'current_month', 'current_day', 'prev_year', 'prev_month', 'prev_day', 'next_year', 'next_month', 'next_day', 'users'));
+        return view('admin.attendance', compact('input_date', 'prev_day_date', 'next_day_date', 'users'));
     }
 
     public function staff()
@@ -120,18 +141,14 @@ class AttendanceController extends Controller
         } else {
             $input_date = Carbon::now()->startOfMonth();
         }
-        $current_year = $input_date->format('Y');
-        $current_month = $input_date->format('m');
 
-        $first_day = Carbon::create($current_year, $current_month, 1);
-        $prev_year = $first_day->copy()->subMonth()->format('Y');
-        $prev_month = $first_day->copy()->subMonth()->format('m');
-        $next_year = $first_day->copy()->addMonth()->format('Y');
-        $next_month = $first_day->copy()->addMonth()->format('m');
+        $current_date = $input_date->copy()->format('Y/m');
+        $prev_month_date = $input_date->copy()->subMonth()->format('Y/m');
+        $next_month_date = $input_date->copy()->addMonth()->format('Y/m');
 
         $dates = [];
-        $start_date = $first_day;
-        $end_date = $first_day->copy()->endOfMonth();
+        $start_date = $input_date;
+        $end_date = $input_date->copy()->endOfMonth();
         $week = ['日', '月', '火', '水', '木', '金', '土'];
 
         for ($day = $start_date->copy(); $day->lte($end_date); $day->addDay()) {
@@ -203,11 +220,40 @@ class AttendanceController extends Controller
             ];
         }
 
-        return view('admin.list', compact('user_name', 'user_id', 'current_year', 'current_month', 'prev_year', 'prev_month', 'next_year', 'next_month', 'dates'));
+        return view('admin.list', compact('user_name', 'user_id', 'current_date', 'prev_month_date', 'next_month_date', 'dates'));
     }
 
     public function workUpdate(CorrectionRequest $request)
     {
+        $attendance_day = AttendanceDay::find($request->attendance_day_id);
+        $attendance_day->workTime()->delete();
+        $new_work_time = null;
+
+        if ($request->work_start_time) {
+            $new_work_time = WorkTime::create([
+                'attendance_day_id' => $attendance_day->id,
+                'start_time' => $this->combineDateTime($attendance_day->date, $request->work_start_time),
+                'end_time' => $this->combineDateTime($attendance_day->date, $request->work_end_time),
+            ]);
+        }
+
+        if ($new_work_time && $new_work_time->start_time) {
+            foreach ($request->break_time as $break_time) {
+                $break_start_time = $break_time['start_time'];
+                $break_end_time = $break_time['end_time'];
+
+                if (!$break_start_time && !$break_end_time) {
+                    continue;
+                }
+
+                BreakTime::create([
+                    'work_time_id' => $new_work_time->id,
+                    'start_time' => $this->combineDateTime($attendance_day->date, $break_start_time),
+                    'end_time' => $this->combineDateTime($attendance_day->date, $break_end_time),
+                ]);
+            }
+        }
+
         return redirect('/admin/attendance/list');
     }
 

@@ -8,9 +8,9 @@
 <div class="content">
     <h1 class="heading">{{ $user_name }}さんの勤怠一覧</h1>
     <div class="info">
-        <a class="info__month-link prev-month-arrow" href="/admin/attendance/staff/{{ $user_id }}/{{ $prev_year }}/{{ $prev_month }}">前月</a>
-        <p class="info__current-month calendar">{{ $current_year }}/{{ $current_month }}</p>
-        <a class="info__month-link next-month-arrow" href="/admin/attendance/staff/{{ $user_id }}/{{ $next_year }}/{{ $next_month }}">翌月</a>
+        <a class="info__month-link prev-month-arrow" href="/admin/attendance/staff/{{ $user_id }}/{{ $prev_month_date }}">前月</a>
+        <p class="info__current-month calendar">{{ $current_date }}</p>
+        <a class="info__month-link next-month-arrow" href="/admin/attendance/staff/{{ $user_id }}/{{ $next_month_date }}">翌月</a>
     </div>
     <div class="table">
         <table class="table__inner">
