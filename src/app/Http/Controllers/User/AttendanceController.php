@@ -394,7 +394,57 @@ class AttendanceController extends Controller
         }
 
         if (auth('admin')->check()) {
-            return view('admin.detail');
+            $attendance_day = AttendanceDay::with(['user', 'workTime.breakTimes', 'workTimeRequests.breakTimeRequests'])->where('id', $attendance_day_id)->first();
+            if (!$attendance_day) {
+                return redirect('/attendance');
+            }
+
+            $user_name = $attendance_day->user->name;
+            $date = $attendance_day->date;
+
+            $work_start_time = '';
+            $work_end_time = '';
+            $break_times = [];
+
+            if ($attendance_day->workTime) {
+                if ($attendance_day->workTime->start_time) {
+                    $work_start_time = $attendance_day->workTime->start_time->format('H:i');
+                }
+
+                if ($attendance_day->workTime->end_time) {
+                    $work_end_time = $attendance_day->workTime->end_time->format('H:i');
+                }
+
+                if (isset($attendance_day->workTime->breakTimes) && $attendance_day->workTime->breakTimes->isNotEmpty()) {
+                    foreach ($attendance_day->workTime->breakTimes as $index => $break_time) {
+
+                        $start_time = '';
+                        $end_time = '';
+
+                        if ($break_time->start_time) {
+                            $start_time = $break_time->start_time->format('H:i');
+                        }
+
+                        if ($break_time->end_time) {
+                            $end_time = $break_time->end_time->format('H:i');
+                        }
+
+                        $break_times[] = [
+                            'index' => $index,
+                            'start_time' => $start_time,
+                            'end_time' => $end_time,
+                        ];
+                    }
+                }
+            }
+
+            $break_times[] = [
+                'index' => count($break_times),
+                'start_time' => '',
+                'end_time' => '',
+            ];
+
+            return view('admin.detail', compact('user_name', 'date', 'work_start_time', 'work_end_time', 'break_times'));
         }
     }
 

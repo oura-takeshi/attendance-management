@@ -1,0 +1,126 @@
+body {
+    background-color: #F0EFF2;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 900px;
+    margin: 93px auto 77px;
+}
+
+.heading {
+    width: 100%;
+    margin: 0 0 51px 0;
+    padding-left: 21px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 40px;
+    border-left: solid 8px #000000;
+}
+
+.form {
+    width: 100%;
+}
+
+.table {
+    width: 100%;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+.table__inner {
+    width: 100%;
+}
+
+.table__row {
+    width: 100%;
+    height: 91px;
+    border-bottom: solid 2px #E1E1E1
+}
+
+.table__row:last-of-type {
+    border-bottom: none;
+}
+
+.table__header {
+    width: 333px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+    letter-spacing: 0.15em;
+    text-align: left;
+    padding-left: 64px;
+}
+
+.table__desc {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;
+    letter-spacing: 0.15em;
+    padding-right: 251px;
+}
+
+.table__desc-name {
+    padding: 0 24px;
+}
+
+.table__desc-date {
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table__desc-time {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table__desc-time-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    width: 103px;
+    height: 29px;
+    text-align: center;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.table__desc-time-input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+.table__error-message {
+    font-size: 14px;
+    font-weight: 400;
+    color: #ff0000;
+    letter-spacing: 0;
+}
+
+.form__button {
+    width: 100%;
+    margin-top: 56px;
+    text-align: right;
+}
+
+.form__button-submit {
+    width: 130px;
+    height: 50px;
+    border: none;
+    border-radius: 5px;
+    background-color: #000000;
+    font-size: 22px;
+    font-weight: 700;
+    color: #FFFFFF;
+    cursor: pointer;
+    letter-spacing: 0.15em;
+}
