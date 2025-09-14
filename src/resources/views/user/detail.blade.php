@@ -10,6 +10,7 @@
     @if ($status === 1)
     <form class="form" action="/attendance/request" method="post">
         @csrf
+        <input type="hidden" name="attendance_day_id" value="{{ $attendance_day_id }}">
         <div class="table">
             <table class="table__inner">
                 <tr class="table__row">

@@ -43,7 +43,7 @@ class CorrectionRequest extends FormRequest
         {
             $string_work_start_time = $this->input('work_start_time');
             $string_work_end_time = $this->input('work_end_time');
-            $string_break_times = $this->input('break_time', []);
+            $string_break_times = $this->input('break_time');
 
             if ($string_work_start_time && $string_work_end_time) {
                 $work_start_time = Carbon::createFromFormat('H:i', $string_work_start_time);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CorrectionRequest;
 use App\Models\AttendanceDay;
 use App\Models\BreakTime;
+use App\Models\BreakTimeRequest;
 use App\Models\WorkTime;
 use App\Models\WorkTimeRequest;
 use Carbon\Carbon;
@@ -389,7 +390,7 @@ class AttendanceController extends Controller
                 'end_time' => '',
             ];
 
-            return view('user.detail', compact('user_name', 'date', 'status', 'work_start_time', 'work_end_time', 'break_times', 'reason'));
+            return view('user.detail', compact('attendance_day_id', 'user_name', 'date', 'status', 'work_start_time', 'work_end_time', 'break_times', 'reason'));
         }
 
         if (auth('admin')->check()) {
@@ -419,6 +420,40 @@ class AttendanceController extends Controller
 
     public function requestCreate(CorrectionRequest $request)
     {
+        $attendance_day = AttendanceDay::find($request->attendance_day_id);
+
+        $work_time_request = WorkTimeRequest::create([
+            'attendance_day_id' => $attendance_day->id,
+            'start_time' => $this->combineDateTime($attendance_day->date, $request->work_start_time),
+            'end_time' => $this->combineDateTime($attendance_day->date, $request->work_end_time),
+            'reason' => $request->reason,
+            'approval' => 1,
+        ]);
+
+        foreach ($request->break_time as $break_time) {
+            $break_start_time = $break_time['start_time'];
+            $break_end_time = $break_time['end_time'];
+
+            if (!$break_start_time && !$break_end_time) {
+                continue;
+            }
+
+            BreakTimeRequest::create([
+                'work_time_request_id' => $work_time_request->id,
+                'start_time' => $this->combineDateTime($attendance_day->date, $break_start_time),
+                'end_time' => $this->combineDateTime($attendance_day->date, $break_end_time),
+            ]);
+        }
+
         return redirect('/attendance');
+    }
+
+    private function combineDateTime($date, $time)
+    {
+        if (empty($time)) {
+            return null;
+        }
+
+        return Carbon::parse("{$date->format('Y-m-d')} {$time}");
     }
 }
