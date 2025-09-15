@@ -1,0 +1,147 @@
+body {
+    background-color: #F0EFF2;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 900px;
+    margin: 78px auto 170px;
+}
+
+.heading {
+    width: 100%;
+    margin: 0 0 61px 0;
+    padding-left: 21px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 40px;
+    border-left: solid 8px #000000;
+}
+
+.info {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    height: 35px;
+    border-bottom: solid 1px #000000
+}
+
+.info__pending {
+    margin-left: 57px;
+}
+
+.info__approved {
+    margin-left: 106px;
+}
+
+.para {
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 19px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+}
+
+.link {
+    line-height: 19px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    color: #000000;
+}
+
+.table {
+    width: 100%;
+    border-radius: 10px;
+    background-color: #ffffff;
+    margin-top: 44px;
+}
+
+.table__inner {
+    width: 100%;
+}
+
+.table__row {
+    width: 100%;
+    height: 46px;
+    border-bottom: solid 2px #E1E1E1
+}
+
+.table__row:first-of-type {
+    border-bottom: solid 3px #E1E1E1;
+}
+
+.table__row:last-of-type {
+    border-bottom: none;
+}
+
+.table__header {
+    width: 145px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+    letter-spacing: 0.15em;
+    padding: 0 9px;
+    text-align: left;
+}
+
+.table__header:first-of-type {
+    width: 191px;
+    padding: 0 9px 0 55px;
+}
+
+.table__header:last-of-type {
+    width: 129px;
+    padding: 0 55px 0 9px;
+}
+
+.table__desc {
+    text-align: left;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+    letter-spacing: 0.15em;
+    padding: 0 9px;
+}
+
+.table__desc:first-of-type {
+    padding: 0 9px 0 55px;
+}
+
+.table__desc:last-of-type {
+    padding: 0 55px 0 9px;
+}
+
+.table__approval-link {
+    color: #000000;
+    text-decoration: none;
+}
+
+.text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.date {
+    letter-spacing: 0;
+}
+
+.comment {
+    width: 100%;
+    text-align: center;
+    margin-top: 44px;
+}
+
+.comment__inner {
+    margin: 0;
+    line-height: 21px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #737373;
+}

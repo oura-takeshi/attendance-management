@@ -7,7 +7,6 @@
 @section('content')
 <div class="content">
     <h1 class="heading">申請一覧</h1>
-
     <div class="info">
         @if ($param !== "approved")
         <p class="info__pending para">承認待ち</p>

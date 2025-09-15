@@ -23,6 +23,6 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/admin/attendance/list/{year?}/{month?}/{day?}', [AttendanceController::class, 'attendance']);
     Route::get('/admin/staff/list', [AttendanceController::class, 'staff']);
     Route::get('/admin/attendance/staff/{user_id}/{year?}/{month?}', [AttendanceController::class, 'list']);
-    Route::get('/stamp_correction_request/approval/{work_time_request_id}', [AttendanceController::class, 'approval']);
+    Route::get('/stamp_correction_request/approve/{work_time_request_id}', [AttendanceController::class, 'approval']);
     Route::post('/admin/attendance/work', [AttendanceController::class, 'workUpdate']);
 });

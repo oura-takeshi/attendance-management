@@ -8,9 +8,15 @@
 <div class="content">
     <h1 class="heading">申請一覧</h1>
     <div class="info">
-        <p class="info__pending">承認待ち</p>
-        <a class="info__approved" href="/stamp_correction_request/list/?page=approved">承認済み</a>
+        @if ($param !== "approved")
+        <p class="info__pending para">承認待ち</p>
+        <a class="info__approved link" href="/stamp_correction_request/list/?page=approved">承認済み</a>
+        @else
+        <a class="info__pending link" href="/stamp_correction_request/list">承認待ち</a>
+        <p class="info__approved para">承認済み</p>
+        @endif
     </div>
+    @if (count($input_requests) > 0)
     <div class="table">
         <table class="table__inner">
             <tr class="table__row">
@@ -21,15 +27,32 @@
                 <th class="table__header">申請日時</th>
                 <th class="table__header">詳細</th>
             </tr>
+            @foreach ($input_requests as $request)
             <tr class="table__row">
-                <td class="table__desc"></td>
-                <td class="table__desc"></td>
-                <td class="table__desc"></td>
-                <td class="table__desc"></td>
-                <td class="table__desc"></td>
-                <td class="table__desc"></td>
+                @if ($request->approval === 1)
+                <td class="table__desc">承認待ち</td>
+                @else
+                <td class="table__desc">承認済み</td>
+                @endif
+                <td class="table__desc text">{{ $request->attendanceDay->user->name }}</td>
+                <td class="table__desc date">{{ $request->attendanceDay->date->format('Y/m/d') }}</td>
+                <td class="table__desc text">{{ $request->reason }}</td>
+                <td class="table__desc date">{{ $request->created_at->format('Y/m/d') }}</td>
+                <td class="table__desc">
+                    <a class="table__approval-link" href="/stamp_correction_request/approve/{{ $request->id }}">詳細</a>
+                </td>
             </tr>
+            @endforeach
         </table>
     </div>
+    @else
+    <div class="comment">
+        @if ($param !== "approved")
+        <p class="comment__inner">*承認待ちの申請はまだありません。</p>
+        @else
+        <p class="comment__inner">*承認済みの申請はまだありません。</p>
+        @endif
+    </div>
+    @endif
 </div>
 @endsection

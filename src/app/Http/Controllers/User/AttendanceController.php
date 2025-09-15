@@ -471,7 +471,16 @@ class AttendanceController extends Controller
         }
 
         if (auth('admin')->check()) {
-            return view('admin.request');
+            $param = $request->page;
+            $user_requests = WorkTimeRequest::join('attendance_days', 'work_time_requests.attendance_day_id', '=', 'attendance_days.id')->with(['attendanceDay.user'])->select('work_time_requests.*');
+
+            if ($param !== "approved") {
+                $input_requests = $user_requests->where('work_time_requests.approval', 1)->orderBy('attendance_days.user_id', 'asc')->orderby('attendance_days.date', 'desc')->get();
+            } else {
+                $input_requests = $user_requests->where('work_time_requests.approval', 2)->orderBy('attendance_days.user_id', 'asc')->orderby('attendance_days.date', 'desc')->orderby('work_time_requests.created_at', 'desc')->get();
+            }
+
+            return view('admin.request', compact('param', 'input_requests'));
         }
     }
 
