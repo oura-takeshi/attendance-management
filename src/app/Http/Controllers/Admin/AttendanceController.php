@@ -8,6 +8,7 @@ use App\Models\AttendanceDay;
 use App\Models\BreakTime;
 use App\Models\User;
 use App\Models\WorkTime;
+use App\Models\WorkTimeRequest;
 use App\Traits\CombinesDateTime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -259,6 +260,93 @@ class AttendanceController extends Controller
 
     public function approval($work_time_request_id)
     {
-        return view('admin.approval');
+        $work_time_request = WorkTimeRequest::with(['attendanceDay.user', 'breakTimeRequests'])->where('id', $work_time_request_id)->first();
+        if (!$work_time_request) {
+            return redirect('/admin/attendance/list');
+        }
+
+        $user_name = $work_time_request->attendanceDay->user->name;
+        $date = $work_time_request->attendanceDay->date;
+        $reason = $work_time_request->reason;
+        $approval = $work_time_request->approval;
+
+        $work_start_time = '';
+        $work_end_time = '';
+        $break_time_requests = [];
+
+        if ($work_time_request->start_time) {
+            $work_start_time = $work_time_request->start_time->format('H:i');
+        }
+
+        if ($work_time_request->end_time) {
+            $work_end_time = $work_time_request->end_time->format('H:i');
+        }
+
+        if (isset($work_time_request->breakTimeRequests) && $work_time_request->breakTimeRequests->isNotEmpty()) {
+            $sorted_break_time_requests = $work_time_request->breakTimeRequests->sortBy('start_time')->values();
+
+            foreach ($sorted_break_time_requests as $index => $break_time_request) {
+                $start_time = '';
+                $end_time = '';
+
+                if ($break_time_request->start_time) {
+                    $start_time = $break_time_request->start_time->format('H:i');
+                }
+
+                if ($break_time_request->end_time) {
+                    $end_time = $break_time_request->end_time->format('H:i');
+                }
+
+                $break_time_requests[] = [
+                    'index' => $index,
+                    'start_time' => $start_time,
+                    'end_time' => $end_time,
+                ];
+            }
+        }
+
+        $break_time_requests[] = [
+            'index' => count($break_time_requests),
+            'start_time' => '',
+            'end_time' => '',
+        ];
+
+        return view('admin.approval', compact('work_time_request_id', 'user_name', 'date', 'work_start_time', 'work_end_time', 'break_time_requests', 'reason', 'approval'));
+    }
+
+    public function requestApprove($work_time_request_id)
+    {
+        $work_time_request = WorkTimeRequest::with(['attendanceDay', 'breakTimeRequests'])->where('id', $work_time_request_id)->where('approval', 1)->first();
+
+        if (!$work_time_request) {
+            return redirect('/admin/attendance/list');
+        }
+
+        $work_time_request->update(['approval' => 2,]);
+
+        $attendance_day = $work_time_request->attendanceDay;
+        if ($attendance_day->workTime) {
+            $attendance_day->workTime()->delete();
+        }
+
+        if($work_time_request->start_time) {
+            $new_work_time = workTime::create([
+                'attendance_day_id' => $attendance_day->id,
+                'start_time' => $work_time_request->start_time,
+                'end_time' => $work_time_request->end_time,
+            ]);
+
+            if ($work_time_request->breakTimeRequests && $work_time_request->breakTimeRequests->isNotEmpty()) {
+                foreach ($work_time_request->breakTimeRequests as $break_time_request) {
+                    BreakTime::create([
+                        'work_time_id' => $new_work_time->id,
+                        'start_time' => $break_time_request->start_time,
+                        'end_time' => $break_time_request->end_time,
+                    ]);
+                }
+            }
+        }
+
+        return redirect('/admin/attendance/list');
     }
 }
