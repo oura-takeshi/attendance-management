@@ -18,8 +18,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::guard('admin')->attempt($credentials)) {
             return redirect('/admin/attendance/list');
-        } else {
-            return redirect('/admin/login')->with('message', 'ログイン情報が登録されていません');
         }
+        return redirect('/admin/login')->with('message', 'ログイン情報が登録されていません');
     }
 }

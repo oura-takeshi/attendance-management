@@ -26,9 +26,13 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            if (is_null($user->email_verified_at)) {
+                return redirect()->route('verification.notice');
+            }
             return redirect('/attendance');
-        } else {
-            return redirect('/login')->with('message', 'ログイン情報が登録されていません');
         }
+        return redirect('/login')->with('message', 'ログイン情報が登録されていません');
     }
 }
