@@ -53,12 +53,12 @@ MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。
 
 ##  adminのログイン用初期データ
 
-メールアドレス: admin@example.com
+メールアドレス: admin@example.com  
 パスワード: admin1234
 
 ## userのログイン用初期データ
 
-メールアドレス: hoge@example.com
+メールアドレス: hoge@example.com  
 パスワード: hoge1234
 
 ## 使用技術(実行環境)
