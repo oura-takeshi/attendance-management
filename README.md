@@ -53,16 +53,90 @@ MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。
 
 ##  adminのログイン用初期データ
 
-- メールアドレス: admin@example.com パスワード: admin1234
+メールアドレス: admin@example.com
+パスワード: admin1234
 
 ## userのログイン用初期データ
 
-- メールアドレス: hoge@example.com パスワード: hoge1234
+メールアドレス: hoge@example.com
+パスワード: hoge1234
 
 ## 使用技術(実行環境)
 - PHP7.4.9
 - Laravel8.83.8
 - MySQL8.0.26
+
+## テーブル仕様
+### usersテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| name | varchar(255) |  |  | ◯ |  |
+| email | varchar(255) |  | ◯ | ◯ |  |
+| email_verified_at | timestamp |  |  |  |  |
+| password | varchar(255) |  |  | ◯ |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+
+### attendance_daysテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| user_id | unsigned bigint |  | ◯(dateとの組み合わせ) | ◯ | users(id) |
+| date | date |  | ◯(user_idとの組み合わせ) | ◯ |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+
+### work_timesテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| attendance_day_id | unsigned bigint |  |  | ◯ | attendance_days(id) |
+| start_time | datetime |  |  | ◯ |  |
+| end_time | datetime |  |  |  |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+
+### break_timesテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| work_time_id | unsigned bigint |  |  | ◯ | work_times(id) |
+| start_time | datetime |  |  | ◯ |  |
+| end_time | datetime |  |  |  |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+
+### work_time_requestsテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key | 補足 |
+| --- | --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |  |
+| attendance_day_id | unsigned bigint |  |  | ◯ | attendance_days(id) |  |
+| start_time | datetime |  |  |  |  |  |
+| end_time | datetime |  |  |  |  |  |
+| reason | varchar(255) |  |  | ◯ |  |  |
+| approval | tinyint |  |  | ◯ |  | 1:承認待ち 2:承認済み |
+| created_at | timestamp |  |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |  |
+
+### break_time_requestsテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| work_time_request_id | unsigned bigint |  |  | ◯ | work_time_requests(id) |
+| start_time | datetime |  |  | ◯ |  |
+| end_time | datetime |  |  | ◯ |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+
+### adminsテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| email | varchar(255) |  | ◯ | ◯ |  |
+| password | varchar(255) |  |  | ◯ |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
 
 ## ER図
 ![alt](erd.png)
