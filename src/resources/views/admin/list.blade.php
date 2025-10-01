@@ -56,5 +56,8 @@
             @endforeach
         </table>
     </div>
+    <div class="export">
+        <a class="export__link" href="/admin/attendance/export/{{ $user_id }}/{{ $current_date }}">CSV出力</a>
+    </div>
 </div>
 @endsection

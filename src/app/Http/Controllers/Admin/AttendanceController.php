@@ -349,4 +349,108 @@ class AttendanceController extends Controller
 
         return redirect('/admin/attendance/list');
     }
+
+    public function export($user_id, $year = null, $month = null)
+    {
+        $user = User::where('id', $user_id)->first();
+        if (!$user) {
+            return redirect('/admin/attendance/list');
+        }
+
+        if ($year && $month) {
+            $input_date = Carbon::create($year, $month, 1);
+        } elseif ($year) {
+            $input_date = Carbon::create($year, 1, 1);
+        } else {
+            $input_date = Carbon::now()->startOfMonth();
+        }
+
+        $start_date = $input_date;
+        $end_date = $input_date->copy()->endOfMonth();
+        $week = ['日', '月', '火', '水', '木', '金', '土'];
+
+        $dates = [];
+        $dates[] = ['日付', '曜日', '出勤', '退勤', '休憩時間', '実働時間'];
+
+        for ($day = $start_date->copy(); $day->lte($end_date); $day->addDay()) {
+            $date = $day->copy();
+            $day_of_week = $week[$date->format('w')];
+
+            $attendance_day = AttendanceDay::where('user_id', $user->id)->where('date', $date)->first();
+
+            if ($attendance_day && $attendance_day->workTime) {
+                $work_time = $attendance_day->workTime;
+            } else {
+                $work_time = null;
+            }
+
+            $work_start_time = null;
+            $work_end_time = null;
+            $work_time_minutes = null;
+            $total_break_time_minutes = null;
+
+            if ($work_time) {
+                $work_start_time = $work_time->start_time->format('H:i');
+
+                if ($work_time->end_time) {
+                    $work_end_time = $work_time->end_time->format('H:i');
+                    $work_time_minutes = $work_time->end_time->diffInMinutes($work_time->start_time);
+                } else {
+                    $work_time_minutes = Carbon::now()->diffInMinutes($work_time->start_time);
+                }
+
+                if (isset($work_time->breakTimes) && $work_time->breakTimes->isNotEmpty()) {
+                    foreach ($work_time->breakTimes as $break_time) {
+                        if ($break_time->end_time) {
+                            $total_break_time_minutes += $break_time->end_time->diffInMinutes($break_time->start_time);
+                        } else {
+                            $total_break_time_minutes += Carbon::now()->diffInMinutes($break_time->start_time);
+                        }
+                    }
+                }
+            }
+
+            $actual_work_time_formatted = null;
+            if ($work_time_minutes !== null) {
+                $actual_work_time_minutes = $work_time_minutes - $total_break_time_minutes;
+                $hours = intdiv($actual_work_time_minutes, 60);
+                $minutes = $actual_work_time_minutes % 60;
+                $actual_work_time_formatted = sprintf('%d:%02d', $hours, $minutes);
+            }
+
+            $total_break_time_formatted = null;
+            if ($total_break_time_minutes !== null) {
+                $hours = intdiv($total_break_time_minutes, 60);
+                $minutes = $total_break_time_minutes % 60;
+                $total_break_time_formatted = sprintf('%d:%02d', $hours, $minutes);
+            }
+
+            $dates[] = [
+                'date' => $date->format('Y-m-d'),
+                'day_of_week' => $day_of_week,
+                'work_start_time' => $work_start_time,
+                'work_end_time' => $work_end_time,
+                'total_break_time' => $total_break_time_formatted,
+                'actual_work_time' => $actual_work_time_formatted,
+            ];
+        }
+
+        $filename = sprintf('attendance_list_%s_%s.csv', $user->id, $input_date->format('Y_m'));
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=Shift-JIS',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($dates) {
+            $handle = fopen('php://output', 'w');
+            foreach ($dates as $date) {
+                mb_convert_variables('SJIS-win', 'UTF-8', $date);
+                fputcsv($handle, $date);
+            }
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

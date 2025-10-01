@@ -26,4 +26,5 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/stamp_correction_request/approve/{work_time_request_id}', [AttendanceController::class, 'approval']);
     Route::post('/admin/attendance/work', [AttendanceController::class, 'workUpdate']);
     Route::get('/admin/attendance/approve/{work_time_request_id}', [AttendanceController::class, 'requestApprove']);
+    Route::get('/admin/attendance/export/{user_id}/{year?}/{month?}', [AttendanceController::class, 'export']);
 });

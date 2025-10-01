@@ -23,12 +23,6 @@ class UsersTableSeeder extends Seeder
                 'password' => Hash::make('hoge1234'),
                 'email_verified_at' => Carbon::now(),
             ],
-            [
-                'name' => 'fuga',
-                'email' => 'fuga@example.com',
-                'password' => Hash::make('fuga1234'),
-                'email_verified_at' => null,
-            ],
         ]);
     }
 }
