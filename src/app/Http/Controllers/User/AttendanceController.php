@@ -354,6 +354,12 @@ class AttendanceController extends Controller
                     }
                 }
 
+                $break_times[] = [
+                    'index' => count($break_times),
+                    'start_time' => '',
+                    'end_time' => '',
+                ];
+
                 $reason = $approved_request->reason;
             } elseif ($attendance_day->workTime) {
                 if ($attendance_day->workTime->start_time) {
@@ -387,13 +393,14 @@ class AttendanceController extends Controller
                         ];
                     }
                 }
-            }
 
-            $break_times[] = [
-                'index' => count($break_times),
-                'start_time' => '',
-                'end_time' => '',
-            ];
+                $break_times[] = [
+                    'index' => count($break_times),
+                    'start_time' => '',
+                    'end_time' => '',
+                ];
+
+            }
 
             return view('user.detail', compact('attendance_day_id', 'user_name', 'date', 'status', 'work_start_time', 'work_end_time', 'break_times', 'reason'));
         }
