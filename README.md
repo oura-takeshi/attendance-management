@@ -143,6 +143,9 @@ MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。
 | created_at | timestamp |  |  |  |  |
 | updated_at | timestamp |  |  |  |  |
 
+## ER図
+![alt](erd.png)
+
 ## PHPUnitを利用したテストに関して
 以下のコマンド:  
 ```
@@ -156,9 +159,6 @@ docker-compose exec php bash
 php artisan migrate:fresh --env=testing
 ./vendor/bin/phpunit
 ```
-
-## ER図
-![alt](erd.png)
 
 ## URL
 - 開発環境：http://localhost/
