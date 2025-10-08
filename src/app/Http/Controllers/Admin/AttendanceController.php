@@ -11,7 +11,6 @@ use App\Models\WorkTime;
 use App\Models\WorkTimeRequest;
 use App\Traits\CombinesDateTime;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {

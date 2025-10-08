@@ -19,6 +19,12 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
         Auth::login($user);
+
+        if (is_null($user->email_verified_at)) {
+            $user->sendEmailVerificationNotification();
+            return redirect()->route('verification.notice');
+        }
+
         return redirect('/attendance');
     }
 
