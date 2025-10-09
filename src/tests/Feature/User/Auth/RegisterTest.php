@@ -15,7 +15,6 @@ class RegisterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed(DatabaseSeeder::class);
     }
 
     public function test_register_user()
@@ -32,5 +31,21 @@ class RegisterTest extends TestCase
             'name' => "test",
             'email' => "test@example.com",
         ]);
+    }
+
+    public function test_register_user_validate_name()
+    {
+        $response = $this->post('/register', [
+            'name' => "",
+            'email' => "test@example.com",
+            'password' => "test1234",
+            'password_confirmation' => "test1234",
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors('name');
+
+        $errors = session('errors');
+        $this->assertEquals('お名前を入力してください', $errors->first('name'));
     }
 }

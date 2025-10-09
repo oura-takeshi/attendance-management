@@ -33,39 +33,30 @@ class WorkTimesTableSeeder extends Seeder
         $user_days = DB::table('attendance_days')->where('user_id', $user_id)->whereIn('date', $dates)->orderBy('date', 'desc')->get();
 
         foreach ($user_days as $user_day) {
-            DB::table('work_times')->insert([
-                [
+            $work_time_id = DB::table('work_times')->insertGetId([
                     'attendance_day_id' => $user_day->id,
                     'start_time' => Carbon::parse("{$user_day->date} {$work_start_time}"),
                     'end_time' => Carbon::parse("{$user_day->date} {$work_end_time}"),
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]
+            ]);
+
+            DB::table('break_times')->insert([
+                [
+                    'work_time_id' => $work_time_id,
+                    'start_time' => Carbon::parse("{$one_day_ago} {$first_break_start_time}"),
+                    'end_time' => Carbon::parse("{$one_day_ago} {$first_break_end_time}"),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'work_time_id' => $work_time_id,
+                    'start_time' => Carbon::parse("{$one_day_ago} {$second_break_start_time}"),
+                    'end_time' => Carbon::parse("{$one_day_ago} {$second_break_end_time}"),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
             ]);
         }
-
-        DB::table('break_times')->insert([
-            [
-                'work_time_id' => 1,
-                'start_time' => Carbon::parse("{$one_day_ago} {$first_break_start_time}"),
-                'end_time' => Carbon::parse("{$one_day_ago} {$first_break_end_time}"),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'work_time_id' => 1,
-                'start_time' => Carbon::parse("{$one_day_ago} {$second_break_start_time}"),
-                'end_time' => Carbon::parse("{$one_day_ago} {$second_break_end_time}"),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'work_time_id' => 2,
-                'start_time' => Carbon::parse("{$two_days_ago} {$first_break_start_time}"),
-                'end_time' => Carbon::parse("{$two_days_ago} {$first_break_end_time}"),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
     }
 }
