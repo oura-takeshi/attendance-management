@@ -19,7 +19,7 @@ class LoginTest extends TestCase
 
     public function test_login_admin()
     {
-        $admin = Admin::find(1);
+        $admin = Admin::where('email', 'admin@example.com')->first();
 
         $response = $this->post('/admin/login', [
             'email' => "admin@example.com",

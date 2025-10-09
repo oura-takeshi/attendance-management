@@ -19,7 +19,7 @@ class LoginTest extends TestCase
 
     public function test_login_user()
     {
-        $user = User::find(1);
+        $user = User::where('email', 'hoge@example.com')->first();
 
         $response = $this->post('/login', [
             'email' => "hoge@example.com",
