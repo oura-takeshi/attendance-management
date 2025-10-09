@@ -27,7 +27,7 @@ class LoginTest extends TestCase
         ]);
 
         $response->assertRedirect('/attendance');
-        $this->assertAuthenticatedAs($user);
+        $this->assertAuthenticatedAs($user, 'web');
     }
 
     public function test_login_user_validate_email()
