@@ -32,6 +32,10 @@ class WorkTimeRequestsTableSeeder extends Seeder
 
         $user_day = DB::table('attendance_days')->where('user_id', $user_id)->where('date', $one_day_ago)->first();
 
+        if (!$user_day) {
+            return;
+        }
+
         $work_time_request_id = DB::table('work_time_requests')->insertGetId([
             'attendance_day_id' => $user_day->id,
             'start_time' => Carbon::parse("{$one_day_ago} {$work_start_time}"),

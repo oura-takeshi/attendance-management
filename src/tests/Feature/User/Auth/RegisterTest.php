@@ -15,6 +15,7 @@ class RegisterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(DatabaseSeeder::class);
     }
 
     public function test_register_user()
@@ -47,5 +48,69 @@ class RegisterTest extends TestCase
 
         $errors = session('errors');
         $this->assertEquals('お名前を入力してください', $errors->first('name'));
+    }
+
+    public function test_register_user_validate_email()
+    {
+        $response = $this->post('/register', [
+            'name' => "test",
+            'email' => "",
+            'password' => "test1234",
+            'password_confirmation' => "test1234",
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors('email');
+
+        $errors = session('errors');
+        $this->assertEquals('メールアドレスを入力してください', $errors->first('email'));
+    }
+
+    public function test_register_user_validate_password()
+    {
+        $response = $this->post('/register', [
+            'name' => "test",
+            'email' => "test@example.com",
+            'password' => "",
+            'password_confirmation' => "test1234",
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors('password');
+
+        $errors = session('errors');
+        $this->assertEquals('パスワードを入力してください', $errors->first('password'));
+    }
+
+    public function test_register_user_validate_password_under7()
+    {
+        $response = $this->post('/register', [
+            'name' => "test",
+            'email' => "test@example.com",
+            'password' => "test123",
+            'password_confirmation' => "test1234",
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors('password');
+
+        $errors = session('errors');
+        $this->assertEquals('パスワードは8文字以上で入力してください', $errors->first('password'));
+    }
+
+    public function test_register_user_validate_confirm_password()
+    {
+        $response = $this->post('/register', [
+            'name' => "test",
+            'email' => "test@example.com",
+            'password' => "test1234",
+            'password_confirmation' => "test5678",
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors('password_confirmation');
+
+        $errors = session('errors');
+        $this->assertEquals('パスワードと一致しません', $errors->first('password_confirmation'));
     }
 }
